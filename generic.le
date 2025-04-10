@@ -1,0 +1,13 @@
+use std/prelude;
+struct Foo<T> {
+    T a;
+};
+
+fn same<T>(T v) -> T {
+    return v;
+}
+fn none(){}
+fn main(string[] args){
+    same<i32>(0);
+    none();
+}

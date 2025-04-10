@@ -17,9 +17,6 @@ module.exports = grammar({
 
   conflicts: ($) => [
     [$.type, $.expression],
-    [$.binary_expression, $.unary_expression, $.call_expression],
-    [$.binary_expression, $.call_expression, $.cast_expression],
-    [$.binary_expression, $.call_expression],
     [$.if_statement, $.parenthesized_expression],
     [$.while_statement, $.parenthesized_expression],
   ],
@@ -398,16 +395,20 @@ module.exports = grammar({
     parenthesized_expression: ($) => seq("(", $.expression, ")"),
 
     call_expression: ($) =>
-      prec.left(
+      prec.right(
         14,
         seq(
-          field("function", choice($.expression, $.qualified_identifier)),
+          field("function", choice(
+            $.identifier,  // Use identifier directly instead of expression
+            $.qualified_identifier
+          )),
           optional($.generic_arguments),
           field("arguments", seq("(", optional($.expression_list), ")")),
         ),
       ),
 
-    generic_arguments: ($) => seq("<", commaSep1($.type), ">"),
+    generic_arguments: ($) => prec(15, seq("<", commaSep1($.type), ">")),
+
 
     member_expression: ($) =>
       prec.left(
