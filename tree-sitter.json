@@ -6,11 +6,10 @@
       "camelcase": "Elle",
       "title": "Elle",
       "scope": "source.elle",
-      "file-types": [
-        "le"
-      ],
+      "file-types": ["le"],
       "injection-regex": "^elle$",
-      "class-name": "TreeSitterElle"
+      "class-name": "TreeSitterElle",
+      "highlights": ["queries/highlights.scm"]
     }
   ],
   "metadata": {
