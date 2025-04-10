@@ -1,6 +1,6 @@
 ; Comments
-(comment) @comment
-
+(comment)
+@comment
 ; Keywords
 [
   "use"
@@ -20,11 +20,11 @@
   "pub"
   "local"
   "global"
-  "let"
-] @keyword
-
+  "let"]
+@keyword
 ; Types
-(type) @type
+(type)
+@type
 [
   "void"
   "bool"
@@ -36,9 +36,26 @@
   "f32"
   "f64"
   "string"
-  "any"
-] @type.builtin
-
+  "any"]
+@type.builtin
+; Generic parameters
+(generic_parameters
+  "<"
+  @punctuation.bracket
+  (identifier)
+  @type.parameter
+  ">"
+  @punctuation.bracket)
+; Generic arguments
+(generic_arguments
+  "<"
+  @punctuation.bracket
+  ">"
+  @punctuation.bracket)
+; Array type brackets
+(array_type
+  "[]"
+  @punctuation.bracket)
 ; Operators
 [
   "="
@@ -66,38 +83,61 @@
   "^="
   "&="
   "|="
-  "<<" 
-  ">>" 
-  "&&" 
+  "<<"
+  ">>"
+  "&&"
   "||"
   "<>"
   "<>="
   ".."
   "..="
-  ":="
-] @operator
+  ":="]
+@operator
+; Functions
+(function_definition
+  (identifier)
+  @function)
+
+; Function calls
+(call_expression
+  function:
+  (expression (identifier) @function.call))
+
+(call_expression
+  function:
+  (qualified_identifier
+    (identifier)
+    @namespace
+    (identifier)
+    @function.method.call))
 
 ; Variables and parameters
 (parameter
-  (identifier) @variable.parameter)
+  (identifier)
+  @variable.parameter)
 (variable_declaration
-  (identifier) @variable)
-
+  (identifier)
+  @variable)
 ; Attributes
 (attribute
-  (identifier) @attribute)
-
+  (identifier)
+  @attribute)
 ; Literals
-(numeric_literal) @number
-(string_literal) @string
-(character_literal) @character
-(boolean_literal) @boolean
-(escape_sequence) @string.escape
-
+(numeric_literal)
+@number
+(string_literal)
+@string
+(character_literal)
+@character
+(boolean_literal)
+@boolean
+(escape_sequence)
+@string.escape
 ; Directives
-(directive_expression) @function.macro
-(sigil_expression) @function.special
-
+(directive_expression)
+@function.macro
+(sigil_expression)
+@function.special
 ; Punctuation
 [
   "("
@@ -109,17 +149,17 @@
   ";"
   ","
   "::"
-  "->"
-] @punctuation.delimiter
-
+  "->"]
+@punctuation.delimiter
 ; Identifiers
-(exact_literal) @string.special
-
+(exact_literal)
+@string.special
 (struct_field_initializer
-  (identifier) @property)
-
-(struct_field 
-  (identifier) @property)
-
+  (identifier)
+  @property)
+(struct_field
+  (identifier)
+  @property)
 (member_expression
-  property: (identifier) @property)
+  (identifier)
+  @property)
