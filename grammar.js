@@ -16,6 +16,7 @@ module.exports = grammar({
   word: ($) => $.identifier,
 
   conflicts: ($) => [
+    [$.range_expression],
     [$.type, $.expression],
     [$.if_statement, $.parenthesized_expression],
     [$.while_statement, $.parenthesized_expression],
@@ -51,7 +52,10 @@ module.exports = grammar({
         optional("pub"),
         optional("local"),
         "fn",
-        choice($.identifier, $.qualified_identifier, $.exact_literal),
+        field(
+          "name",
+          choice($.identifier, $.qualified_identifier, $.exact_literal),
+        ),
         optional($.generic_parameters),
         "(",
         optional($.parameter_list),
@@ -98,7 +102,7 @@ module.exports = grammar({
 
     no_format_parameter: ($) => seq("@nofmt", $.type, $.identifier),
 
-    variadic_parameter: ($) => "...",
+    variadic_parameter: ($) => seq("...", $.identifier),
 
     // External function declarations
     external_function_declaration: ($) =>
@@ -212,25 +216,7 @@ module.exports = grammar({
       ),
 
     assignment_statement: ($) =>
-      seq(
-        $.expression,
-        choice(
-          "=",
-          "+=",
-          "-=",
-          "*=",
-          "/=",
-          "%=",
-          "&=",
-          "|=",
-          "^=",
-          "<<=",
-          ">>=",
-          "<>=",
-        ),
-        $.expression,
-        ";",
-      ),
+      seq($.expression, choice("=", "+=", "-=", "*=", "/="), $.expression, ";"),
 
     if_statement: ($) =>
       seq(
@@ -284,13 +270,6 @@ module.exports = grammar({
           "-=",
           "*=",
           "/=",
-          "%=",
-          "&=",
-          "|=",
-          "^=",
-          "<<=",
-          ">>=",
-          "<>=",
         ),
         $.expression,
       ),
@@ -332,45 +311,30 @@ module.exports = grammar({
     expression_list: ($) => commaSep1($.expression),
 
     binary_expression: ($) => {
-      const PREC = {
-        range: 1,
-        or: 2,
-        and: 3,
-        bitwise_or: 4,
-        bitwise_xor: 5,
-        bitwise_and: 6,
-        equal: 7,
-        compare: 8,
-        shift: 9,
-        add: 10,
-        multiply: 11,
-        concat: 12,
-      };
+      const table = [
+        ["+", 8],
+        ["-", 8],
+        ["*", 9],
+        ["/", 9],
+        ["%", 9],
+        ["&", 5],
+        ["|", 3],
+        ["^", 4],
+        ["<<", 7],
+        [">>", 7],
+        ["==", 6],
+        ["!=", 6],
+        ["<", 6],
+        ["<=", 6],
+        [">", 6],
+        [">=", 6],
+        ["&&", 2],
+        ["||", 1],
+        ["<>", 1]
+      ];
 
       return choice(
-        ...[
-          ["..", PREC.range],
-          ["..=", PREC.range],
-          ["||", PREC.or],
-          ["&&", PREC.and],
-          ["|", PREC.bitwise_or],
-          ["^", PREC.bitwise_xor],
-          ["&", PREC.bitwise_and],
-          ["==", PREC.equal],
-          ["!=", PREC.equal],
-          ["<", PREC.compare],
-          ["<=", PREC.compare],
-          [">", PREC.compare],
-          [">=", PREC.compare],
-          ["<<", PREC.shift],
-          [">>", PREC.shift],
-          ["+", PREC.add],
-          ["-", PREC.add],
-          ["*", PREC.multiply],
-          ["/", PREC.multiply],
-          ["%", PREC.multiply],
-          ["<>", PREC.concat],
-        ].map(([operator, precedence]) => {
+        ...table.map(([operator, precedence]) => {
           return prec.left(
             precedence,
             seq(
@@ -398,17 +362,19 @@ module.exports = grammar({
       prec.right(
         14,
         seq(
-          field("function", choice(
-            $.identifier,  // Use identifier directly instead of expression
-            $.qualified_identifier
-          )),
+          field(
+            "function",
+            choice(
+              $.identifier, // Use identifier directly instead of expression
+              $.qualified_identifier,
+            ),
+          ),
           optional($.generic_arguments),
           field("arguments", seq("(", optional($.expression_list), ")")),
         ),
       ),
 
     generic_arguments: ($) => prec(15, seq("<", commaSep1($.type), ">")),
-
 
     member_expression: ($) =>
       prec.left(
@@ -512,7 +478,7 @@ module.exports = grammar({
     struct_field_initializer: ($) => seq($.identifier, "=", $.expression),
 
     range_expression: ($) =>
-      seq($.expression, choice("..", "..="), $.expression),
+      prec(12, seq($.expression, choice("..", "..="), $.expression)),
 
     lambda_expression: ($) =>
       seq(
