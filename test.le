@@ -28,6 +28,8 @@ fn main(string[] args) {
     Foo<i32> x = Foo { a = 1 };
     Foo<string> y = Foo { a = "hello world!" };
 
+    add2(1,2);
+
     add<i32>(1, 2);
     add<f32>(1.2, 1.3);
 

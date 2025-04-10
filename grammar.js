@@ -135,6 +135,7 @@ module.exports = grammar({
     struct_definition: ($) =>
       seq(
         optional("pub"),
+        optional("local"),
         "struct",
         $.identifier,
         optional($.generic_parameters),
