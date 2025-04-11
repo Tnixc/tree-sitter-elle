@@ -2483,6 +2483,14 @@
                 {
                   "type": "SYMBOL",
                   "name": "qualified_identifier"
+                },
+                {
+                  "type": "SYMBOL",
+                  "name": "member_expression"
+                },
+                {
+                  "type": "SYMBOL",
+                  "name": "parenthesized_expression"
                 }
               ]
             }

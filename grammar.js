@@ -368,6 +368,8 @@ module.exports = grammar({
             choice(
               $.identifier,
               $.qualified_identifier,
+              $.member_expression,
+              $.parenthesized_expression 
             ),
           ),
           optional($.generic_arguments),
