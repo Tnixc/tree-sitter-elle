@@ -19,6 +19,8 @@ module.exports = grammar({
     [$.range_expression],
     [$.if_statement, $.parenthesized_expression],
     [$.while_statement, $.parenthesized_expression],
+    [$.expression, $._callable_expr],
+    [$.expression, $.type],
   ],
 
   rules: {
@@ -87,10 +89,8 @@ module.exports = grammar({
             choice($.parameter, $.variadic_parameter, $.no_format_parameter),
           ),
         ),
-
         // ElleMeta alone
         seq("ElleMeta", $.identifier),
-
         // Regular parameters without ElleMeta
         commaSep1(
           choice($.parameter, $.variadic_parameter, $.no_format_parameter),
@@ -147,7 +147,8 @@ module.exports = grammar({
 
     struct_field: ($) => seq($.type, $.identifier, ";"),
 
-    generic_parameters: ($) => prec(15, seq("<", commaSep1($.identifier), ">")),
+    generic_parameters: ($) =>
+      prec(15, seq(token("<"), commaSep1($.identifier), token(">"))),
 
     // Types
     type: ($) =>
@@ -174,9 +175,10 @@ module.exports = grammar({
 
     array_type: ($) => prec.left(1, seq($.type, "[]", repeat("[]"))),
 
-    pointer_type: ($) => prec.left(1, seq($.type, "*", repeat("*"))),
+    pointer_type: ($) => prec.left(13, seq($.type, "*", repeat("*"))),
 
-    generic_type: ($) => seq($.identifier, "<", commaSep1($.type), ">"),
+    generic_type: ($) =>
+      seq($.identifier, token("<"), commaSep1($.type), token(">")),
 
     tuple_type: ($) => seq("(", $.type, ",", $.type, ")"),
 
@@ -262,17 +264,7 @@ module.exports = grammar({
       ),
 
     assignment_statement_no_semi: ($) =>
-      seq(
-        $.expression,
-        choice(
-          "=",
-          "+=",
-          "-=",
-          "*=",
-          "/=",
-        ),
-        $.expression,
-      ),
+      seq($.expression, choice("=", "+=", "-=", "*=", "/="), $.expression),
 
     defer_statement: ($) => seq("defer", $.expression, ";"),
 
@@ -284,30 +276,29 @@ module.exports = grammar({
 
     // Expressions
     expression: ($) =>
-      prec(100, // yeah this is cooked
-        choice(
-          $.binary_expression,
-          $.unary_expression,
-          $.parenthesized_expression,
-          $.call_expression,
-          $.member_expression,
-          $.subscript_expression,
-          $.conditional_expression,
-          $.numeric_literal,
-          $.string_literal,
-          $.boolean_literal,
-          $.character_literal,
-          $.array_literal,
-          $.tuple_literal,
-          $.triple_literal,
-          $.struct_literal,
-          $.lambda_expression,
-          $.range_expression,
-          $.cast_expression,
-          $.identifier,
-          $.directive_expression,
-          $.sigil_expression,
-        )),
+      choice(
+        $.call_expression,
+        $.binary_expression,
+        $.unary_expression,
+        $.parenthesized_expression,
+        $.member_expression,
+        $.subscript_expression,
+        $.conditional_expression,
+        $.numeric_literal,
+        $.string_literal,
+        $.boolean_literal,
+        $.character_literal,
+        $.array_literal,
+        $.tuple_literal,
+        $.triple_literal,
+        $.struct_literal,
+        $.lambda_expression,
+        $.range_expression,
+        $.cast_expression,
+        $.identifier,
+        $.directive_expression,
+        $.sigil_expression,
+      ),
 
     expression_list: ($) => commaSep1($.expression),
 
@@ -331,16 +322,16 @@ module.exports = grammar({
         ["!=", 6],
         ["&&", 2],
         ["||", 1],
-        ["<>", 1]
+        ["<>", 1],
       ];
 
       return choice(
         ...table.map(([operator, precedence]) => {
-          return prec.right(
+          return prec.left(
             precedence,
             seq(
               field("left", $.expression),
-              field("operator", operator),
+              field("operator", operator.toString()),
               field("right", $.expression),
             ),
           );
@@ -360,24 +351,44 @@ module.exports = grammar({
     parenthesized_expression: ($) => seq("(", $.expression, ")"),
 
     call_expression: ($) =>
-      prec.right(
-        14,
+      choice(
+        $._simple_call,
+        $._generic_call,
+      ),
+
+    // Non-generic function calls
+    _simple_call: ($) =>
+      prec(
+        20,
         seq(
-          field(
-            "function",
-            choice(
-              $.identifier,
-              $.qualified_identifier,
-              $.member_expression,
-              $.parenthesized_expression 
-            ),
-          ),
-          optional($.generic_arguments),
+          field("function", $._callable_expr),
           field("arguments", seq("(", optional($.expression_list), ")")),
         ),
       ),
 
-    generic_arguments: ($) => prec(15, seq("<", commaSep1($.type), ">")),
+    // Generic function calls - slightly higher precedence
+    _generic_call: ($) =>
+      prec(
+        21,
+        seq(
+          field("function", $._callable_expr),
+          // Embed the generic part directly here
+          field(
+            "generic_arguments",
+            seq(token("<"), commaSep1($.type), token(">")),
+          ),
+          field("arguments", seq("(", optional($.expression_list), ")")),
+        ),
+      ),
+
+    // Helper rule defining what can be called (copied from your original rule)
+    _callable_expr: ($) =>
+      choice(
+        $.identifier,
+        $.qualified_identifier,
+        $.member_expression,
+        $.parenthesized_expression,
+      ),
 
     member_expression: ($) =>
       prec.left(
@@ -471,7 +482,7 @@ module.exports = grammar({
         15,
         seq(
           $.identifier,
-          optional($.generic_arguments),
+          optional($.generic_parameters),
           "{",
           commaSep($.struct_field_initializer),
           "}",
