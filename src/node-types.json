@@ -849,7 +849,7 @@
     },
     "children": {
       "multiple": true,
-      "required": true,
+      "required": false,
       "types": [
         {
           "type": "attributes",
@@ -909,7 +909,7 @@
     }
   },
   {
-    "type": "global_pub_directive",
+    "type": "global_directive",
     "named": true,
     "fields": {}
   },
@@ -1217,7 +1217,7 @@
           "named": true
         },
         {
-          "type": "global_pub_directive",
+          "type": "global_directive",
           "named": true
         },
         {

@@ -21,7 +21,7 @@ module.exports = grammar({
           $.constant_definition,
           $.external_function_declaration,
           $.struct_definition,
-          $.global_pub_directive,
+          $.global_directive,
         ),
       ),
 
@@ -34,8 +34,8 @@ module.exports = grammar({
 
     module_path: ($) => seq(repeat(seq($.identifier, "/")), $.identifier),
 
-    global_pub_directive: ($) =>
-      seq("global", commaSep1("pub", "external"), ";"),
+    global_directive: ($) =>
+      seq("global", commaSep(choice("pub", "external")), ";"),
 
     // Function definitions
     function_definition: ($) =>
@@ -56,7 +56,8 @@ module.exports = grammar({
         ")",
         optional($.attributes),
         optional(seq("->", $.type)),
-        $.block,
+        optional($.block),
+        optional(";"),
       ),
 
     qualified_identifier: ($) => seq($.identifier, "::", $.identifier),
