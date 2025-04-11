@@ -10,6 +10,7 @@ module.exports = grammar({
     [$.range_expression],
     [$.if_statement, $.parenthesized_expression],
     [$.while_statement, $.parenthesized_expression],
+    [$._callable_expr, $.struct_literal, $.generic_type],
   ],
 
   rules: {
@@ -174,13 +175,31 @@ module.exports = grammar({
 
     pointer_type: ($) => prec.left(13, seq($.type, "*", repeat("*"))),
 
-    // Updated generic type rule enforcing immediate tokens
+    // Generic type: for types like Foo<Bar>
     generic_type: ($) =>
       seq(
         $.identifier,
         token.immediate("<"),
         commaSep1($.type),
         token.immediate(">"),
+      ),
+
+    // Generic call: for calls like add<i32>(a, b)
+    _generic_call: ($) =>
+      prec(
+        21,
+        seq(
+          field("function", $._callable_expr),
+          field(
+            "generic_arguments",
+            seq(
+              token.immediate("<"),
+              commaSep1($.type),
+              token.immediate(">"),
+            ),
+          ),
+          field("arguments", seq("(", optional($.expression_list), ")")),
+        ),
       ),
 
     tuple_type: ($) => seq("(", $.type, ",", $.type, ")"),
@@ -358,22 +377,27 @@ module.exports = grammar({
 
     // Non-generic function calls
     call_expression: ($) =>
-      prec(
-        20,
-        seq(
-          field("function", $._callable_expr),
-          optional($.generic_parameters),
-          field("arguments", seq("(", optional($.expression_list), ")")),
+      choice(
+        prec(
+          20,
+          seq(
+            field("function", $._callable_expr),
+            field("arguments", seq("(", optional($.expression_list), ")")),
+          ),
         ),
+        prec(21, $._generic_call),
       ),
 
     // Helper rule defining what can be called (copied from your original rule)
     _callable_expr: ($) =>
-      choice(
-        $.identifier,
-        $.qualified_identifier,
-        $.member_expression,
-        $.parenthesized_expression,
+      prec(
+        1,
+        choice(
+          $.identifier,
+          $.qualified_identifier,
+          $.member_expression,
+          $.parenthesized_expression,
+        ),
       ),
 
     member_expression: ($) =>
