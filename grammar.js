@@ -8,9 +8,8 @@ module.exports = grammar({
 
   conflicts: ($) => [
     [$.range_expression],
-    [$.if_statement, $.parenthesized_expression],
     [$.while_statement, $.parenthesized_expression],
-    [$._callable_expr, $.struct_literal, $.generic_type],
+    [$.expression, $._binary_operand],
   ],
 
   rules: {
@@ -35,13 +34,17 @@ module.exports = grammar({
 
     module_path: ($) => seq(repeat(seq($.identifier, "/")), $.identifier),
 
-    global_pub_directive: ($) => seq("global", "pub", ";"),
+    global_pub_directive: ($) =>
+      seq("global", commaSep1("pub", "external"), ";"),
 
     // Function definitions
     function_definition: ($) =>
       seq(
         optional("pub"),
         optional("local"),
+        optional("!pub"),
+        optional("!local"),
+        optional("!external"),
         "fn",
         field(
           "name",
@@ -113,6 +116,8 @@ module.exports = grammar({
       seq(
         optional("pub"),
         optional("local"),
+        optional("!pub"),
+        optional("!local"),
         "const",
         $.type,
         $.identifier,
@@ -126,6 +131,8 @@ module.exports = grammar({
       seq(
         optional("pub"),
         optional("local"),
+        optional("!pub"),
+        optional("!local"),
         "struct",
         $.identifier,
         optional($.generic_parameters),
@@ -150,25 +157,28 @@ module.exports = grammar({
 
     // Types
     type: ($) =>
-      choice(
-        "void",
-        "bool",
-        "char",
-        "i8",
-        "i16",
-        "i32",
-        "i64",
-        "f32",
-        "f64",
-        "fn",
-        "string",
-        "any",
-        "FILE",
-        $.identifier,
-        $.array_type,
-        $.pointer_type,
-        $.generic_type,
-        $.tuple_type,
+      prec(
+        1,
+        choice(
+          "void",
+          "bool",
+          "char",
+          "i8",
+          "i16",
+          "i32",
+          "i64",
+          "f32",
+          "f64",
+          "fn",
+          "string",
+          "any",
+          "FILE",
+          $.identifier,
+          $.array_type,
+          $.pointer_type,
+          $.generic_type,
+          $.tuple_type,
+        ),
       ),
 
     array_type: ($) => prec.left(1, seq($.type, "[]", repeat("[]"))),
@@ -208,20 +218,23 @@ module.exports = grammar({
     block: ($) => seq("{", repeat($.statement), "}"),
 
     statement: ($) =>
-      choice(
-        $.expression_statement,
-        $.variable_declaration,
-        $.assignment_statement,
-        $.if_statement,
-        $.while_statement,
-        $.for_statement,
-        $.foreach_statement,
-        $.defer_statement,
-        $.return_statement,
-        $.break_statement,
-        $.continue_statement,
-        $.block,
-        $.static_buffer,
+      prec(
+        50,
+        choice(
+          $.expression_statement,
+          $.variable_declaration,
+          $.assignment_statement,
+          $.if_statement,
+          $.while_statement,
+          $.for_statement,
+          $.foreach_statement,
+          $.defer_statement,
+          $.return_statement,
+          $.break_statement,
+          $.continue_statement,
+          $.block,
+          $.static_buffer,
+        ),
       ),
 
     expression_statement: ($) => seq($.expression, ";"),
@@ -243,13 +256,20 @@ module.exports = grammar({
       seq($.expression, choice("=", "+=", "-=", "*=", "/="), $.expression, ";"),
 
     if_statement: ($) =>
-      seq(
-        "if",
-        optional("("),
-        $.expression,
-        optional(")"),
-        $.block,
-        optional($.else_clause),
+      prec.right(
+        1,
+        seq(
+          token.immediate("if"),
+          field(
+            "condition",
+            choice(
+              seq("(", $.expression, ")"),
+              $.expression,
+            ),
+          ),
+          prec.dynamic(10, field("body", $.block)),
+          optional($.else_clause),
+        ),
       ),
 
     else_clause: ($) =>
@@ -290,7 +310,8 @@ module.exports = grammar({
 
     defer_statement: ($) => seq("defer", $.expression, ";"),
 
-    return_statement: ($) => seq("return", optional($.expression), ";"),
+    return_statement: ($) =>
+      prec(10, seq("return", optional($.expression), ";")),
 
     break_statement: ($) => seq("break", ";"),
 
@@ -298,34 +319,56 @@ module.exports = grammar({
 
     // Expressions
     expression: ($) =>
-      prec(
-        1,
-        choice(
-          $.call_expression,
-          $.binary_expression,
-          $.unary_expression,
-          $.parenthesized_expression,
-          $.member_expression,
-          $.subscript_expression,
-          $.conditional_expression,
-          $.numeric_literal,
-          $.string_literal,
-          $.boolean_literal,
-          $.character_literal,
-          $.array_literal,
-          $.tuple_literal,
-          $.triple_literal,
-          $.struct_literal,
-          $.lambda_expression,
-          $.range_expression,
-          $.cast_expression,
-          $.identifier,
-          $.directive_expression,
-          $.sigil_expression,
-        ),
+      choice(
+        $.call_expression,
+        $.binary_expression,
+        $.unary_expression,
+        $.parenthesized_expression,
+        $.member_expression,
+        $.subscript_expression,
+        $.conditional_expression,
+        $.numeric_literal,
+        $.string_literal,
+        $.boolean_literal,
+        $.character_literal,
+        $.array_literal,
+        $.tuple_literal,
+        $.triple_literal,
+        $.struct_literal,
+        $.lambda_expression,
+        $.range_expression,
+        $.cast_expression,
+        $.identifier,
+        $.directive_expression,
+        $.sigil_expression,
       ),
 
     expression_list: ($) => commaSep1($.expression),
+
+    _binary_operand: ($) =>
+      choice(
+        $.identifier,
+        $.binary_expression,
+        $.call_expression,
+        $.unary_expression,
+        $.parenthesized_expression,
+        $.member_expression,
+        $.subscript_expression,
+        $.conditional_expression,
+        $.numeric_literal,
+        $.string_literal,
+        $.boolean_literal,
+        $.character_literal,
+        $.array_literal,
+        $.tuple_literal,
+        $.triple_literal,
+        // $.struct_literal is intentionally excluded
+        $.lambda_expression,
+        $.range_expression,
+        $.cast_expression,
+        // $.directive_expression, //probably can't compare these either
+        // $.sigil_expression,
+      ),
 
     binary_expression: ($) => {
       const table = [
@@ -337,14 +380,14 @@ module.exports = grammar({
         ["&", 5],
         ["|", 3],
         ["^", 4],
+        ["==", 6],
+        ["!=", 6],
         ["<", 6],
         [">", 6],
         ["<=", 6],
         [">=", 6],
         ["<<", 7],
         [">>", 7],
-        ["==", 6],
-        ["!=", 6],
         ["&&", 2],
         ["||", 1],
         ["<>", 1],
@@ -355,9 +398,9 @@ module.exports = grammar({
           return prec.left(
             precedence,
             seq(
-              field("left", $.expression),
+              field("left", $._binary_operand),
               field("operator", operator.toString()),
-              field("right", $.expression),
+              field("right", $._binary_operand),
             ),
           );
         }),
@@ -435,7 +478,6 @@ module.exports = grammar({
 
     cast_expression: ($) => prec.left(12, seq("(", $.type, ")", $.expression)),
 
-    // Literals
     numeric_literal: ($) => {
       const hex = /0[xX][0-9a-fA-F](_?[0-9a-fA-F])*/;
       const octal = /0[oO][0-7](_?[0-7])*/;
@@ -493,7 +535,7 @@ module.exports = grammar({
 
     struct_literal: ($) =>
       prec(
-        15,
+        -1,
         seq(
           $.identifier,
           optional($.generic_parameters),
