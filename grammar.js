@@ -17,7 +17,6 @@ module.exports = grammar({
 
   conflicts: ($) => [
     [$.range_expression],
-    [$.type, $.expression],
     [$.if_statement, $.parenthesized_expression],
     [$.while_statement, $.parenthesized_expression],
   ],
@@ -102,7 +101,7 @@ module.exports = grammar({
 
     no_format_parameter: ($) => seq("@nofmt", $.type, $.identifier),
 
-    variadic_parameter: ($) => seq("...", $.identifier),
+    variadic_parameter: ($) => seq("...", optional($.identifier)),
 
     // External function declarations
     external_function_declaration: ($) =>
@@ -148,7 +147,7 @@ module.exports = grammar({
 
     struct_field: ($) => seq($.type, $.identifier, ";"),
 
-    generic_parameters: ($) => seq("<", commaSep1($.identifier), ">"),
+    generic_parameters: ($) => prec(15, seq("<", commaSep1($.identifier), ">")),
 
     // Types
     type: ($) =>
@@ -208,10 +207,11 @@ module.exports = grammar({
         choice(
           seq($.type, $.identifier),
           seq("let", $.identifier),
-          seq($.identifier, ":="),
+          // handle := syntax
+          seq($.identifier, ":=", $.expression),
+          seq($.identifier, ":="), // this line may or may not be useless
         ),
-        "=",
-        $.expression,
+        optional(seq("=", $.expression)),
         ";",
       ),
 
@@ -284,50 +284,51 @@ module.exports = grammar({
 
     // Expressions
     expression: ($) =>
-      choice(
-        $.binary_expression,
-        $.unary_expression,
-        $.parenthesized_expression,
-        $.call_expression,
-        $.member_expression,
-        $.subscript_expression,
-        $.conditional_expression,
-        $.numeric_literal,
-        $.string_literal,
-        $.boolean_literal,
-        $.character_literal,
-        $.array_literal,
-        $.tuple_literal,
-        $.triple_literal,
-        $.struct_literal,
-        $.lambda_expression,
-        $.range_expression,
-        $.cast_expression,
-        $.identifier,
-        $.directive_expression,
-        $.sigil_expression,
-      ),
+      prec(100, // yeah this is cooked
+        choice(
+          $.binary_expression,
+          $.unary_expression,
+          $.parenthesized_expression,
+          $.call_expression,
+          $.member_expression,
+          $.subscript_expression,
+          $.conditional_expression,
+          $.numeric_literal,
+          $.string_literal,
+          $.boolean_literal,
+          $.character_literal,
+          $.array_literal,
+          $.tuple_literal,
+          $.triple_literal,
+          $.struct_literal,
+          $.lambda_expression,
+          $.range_expression,
+          $.cast_expression,
+          $.identifier,
+          $.directive_expression,
+          $.sigil_expression,
+        )),
 
     expression_list: ($) => commaSep1($.expression),
 
     binary_expression: ($) => {
       const table = [
-        ["+", 8],
-        ["-", 8],
         ["*", 9],
         ["/", 9],
         ["%", 9],
+        ["+", 8],
+        ["-", 8],
         ["&", 5],
         ["|", 3],
         ["^", 4],
+        ["<", 6],
+        [">", 6],
+        ["<=", 6],
+        [">=", 6],
         ["<<", 7],
         [">>", 7],
         ["==", 6],
         ["!=", 6],
-        ["<", 6],
-        ["<=", 6],
-        [">", 6],
-        [">=", 6],
         ["&&", 2],
         ["||", 1],
         ["<>", 1]
@@ -335,7 +336,7 @@ module.exports = grammar({
 
       return choice(
         ...table.map(([operator, precedence]) => {
-          return prec.left(
+          return prec.right(
             precedence,
             seq(
               field("left", $.expression),
@@ -365,7 +366,7 @@ module.exports = grammar({
           field(
             "function",
             choice(
-              $.identifier, // Use identifier directly instead of expression
+              $.identifier,
               $.qualified_identifier,
             ),
           ),
