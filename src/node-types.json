@@ -921,17 +921,16 @@
             "named": false
           },
           {
-            "type": "global_directive_option",
-            "named": true
+            "type": "external",
+            "named": false
+          },
+          {
+            "type": "pub",
+            "named": false
           }
         ]
       }
     }
-  },
-  {
-    "type": "global_directive_option",
-    "named": true,
-    "fields": {}
   },
   {
     "type": "if_statement",
@@ -1810,7 +1809,8 @@
   },
   {
     "type": ";",
-    "named": false
+    "named": false,
+    "extra": true
   },
   {
     "type": "<",

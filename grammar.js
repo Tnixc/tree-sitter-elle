@@ -2,7 +2,7 @@
 module.exports = grammar({
   name: "elle",
 
-  extras: ($) => [/\s|\\\r?\n/, $.comment],
+  extras: ($) => [/\s|\\\r?\n/, $.comment, ";"],
 
   word: ($) => $.identifier,
 

@@ -127,7 +127,7 @@
             "members": [
               {
                 "type": "SYMBOL",
-                "name": "global_directive_option"
+                "name": "_global_directive_option"
               },
               {
                 "type": "REPEAT",
@@ -140,7 +140,7 @@
                     },
                     {
                       "type": "SYMBOL",
-                      "name": "global_directive_option"
+                      "name": "_global_directive_option"
                     }
                   ]
                 }
@@ -166,7 +166,7 @@
         }
       ]
     },
-    "global_directive_option": {
+    "_global_directive_option": {
       "type": "CHOICE",
       "members": [
         {
@@ -3930,6 +3930,10 @@
     {
       "type": "SYMBOL",
       "name": "comment"
+    },
+    {
+      "type": "STRING",
+      "value": ";"
     }
   ],
   "conflicts": [
