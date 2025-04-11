@@ -1,12 +1,3 @@
-/**
- * @file Elle grammar for tree-sitter
- * @author Tnixc <tnixxc@gmail.com>
- * @license MIT
- */
-
-/// <reference types="tree-sitter-cli/dsl" />
-// @ts-check
-
 // Tree-sitter grammar for the Elle programming language
 module.exports = grammar({
   name: "elle",
@@ -19,8 +10,6 @@ module.exports = grammar({
     [$.range_expression],
     [$.if_statement, $.parenthesized_expression],
     [$.while_statement, $.parenthesized_expression],
-    [$.expression, $._callable_expr],
-    [$.expression, $.type],
   ],
 
   rules: {
@@ -147,8 +136,16 @@ module.exports = grammar({
 
     struct_field: ($) => seq($.type, $.identifier, ";"),
 
+    // Updated generic parameters rule enforcing immediate tokens
     generic_parameters: ($) =>
-      prec(15, seq(token("<"), commaSep1($.identifier), token(">"))),
+      prec(
+        15,
+        seq(
+          token.immediate("<"),
+          commaSep1($.identifier),
+          token.immediate(">"),
+        ),
+      ),
 
     // Types
     type: ($) =>
@@ -177,8 +174,14 @@ module.exports = grammar({
 
     pointer_type: ($) => prec.left(13, seq($.type, "*", repeat("*"))),
 
+    // Updated generic type rule enforcing immediate tokens
     generic_type: ($) =>
-      seq($.identifier, token("<"), commaSep1($.type), token(">")),
+      seq(
+        $.identifier,
+        token.immediate("<"),
+        commaSep1($.type),
+        token.immediate(">"),
+      ),
 
     tuple_type: ($) => seq("(", $.type, ",", $.type, ")"),
 
@@ -276,28 +279,31 @@ module.exports = grammar({
 
     // Expressions
     expression: ($) =>
-      choice(
-        $.call_expression,
-        $.binary_expression,
-        $.unary_expression,
-        $.parenthesized_expression,
-        $.member_expression,
-        $.subscript_expression,
-        $.conditional_expression,
-        $.numeric_literal,
-        $.string_literal,
-        $.boolean_literal,
-        $.character_literal,
-        $.array_literal,
-        $.tuple_literal,
-        $.triple_literal,
-        $.struct_literal,
-        $.lambda_expression,
-        $.range_expression,
-        $.cast_expression,
-        $.identifier,
-        $.directive_expression,
-        $.sigil_expression,
+      prec(
+        1,
+        choice(
+          $.call_expression,
+          $.binary_expression,
+          $.unary_expression,
+          $.parenthesized_expression,
+          $.member_expression,
+          $.subscript_expression,
+          $.conditional_expression,
+          $.numeric_literal,
+          $.string_literal,
+          $.boolean_literal,
+          $.character_literal,
+          $.array_literal,
+          $.tuple_literal,
+          $.triple_literal,
+          $.struct_literal,
+          $.lambda_expression,
+          $.range_expression,
+          $.cast_expression,
+          $.identifier,
+          $.directive_expression,
+          $.sigil_expression,
+        ),
       ),
 
     expression_list: ($) => commaSep1($.expression),
@@ -350,33 +356,13 @@ module.exports = grammar({
 
     parenthesized_expression: ($) => seq("(", $.expression, ")"),
 
-    call_expression: ($) =>
-      choice(
-        $._simple_call,
-        $._generic_call,
-      ),
-
     // Non-generic function calls
-    _simple_call: ($) =>
+    call_expression: ($) =>
       prec(
         20,
         seq(
           field("function", $._callable_expr),
-          field("arguments", seq("(", optional($.expression_list), ")")),
-        ),
-      ),
-
-    // Generic function calls - slightly higher precedence
-    _generic_call: ($) =>
-      prec(
-        21,
-        seq(
-          field("function", $._callable_expr),
-          // Embed the generic part directly here
-          field(
-            "generic_arguments",
-            seq(token("<"), commaSep1($.type), token(">")),
-          ),
+          optional($.generic_parameters),
           field("arguments", seq("(", optional($.expression_list), ")")),
         ),
       ),
@@ -439,7 +425,11 @@ module.exports = grammar({
     },
 
     string_literal: ($) =>
-      seq('"', repeat(choice(/[^"\\\n]/, $.escape_sequence)), '"'),
+      seq(
+        '"',
+        repeat(choice(/[^"\\\n]/, $.escape_sequence)),
+        '"',
+      ),
 
     escape_sequence: ($) =>
       token.immediate(
