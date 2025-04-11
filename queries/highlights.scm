@@ -40,21 +40,26 @@
 "f64"
 "string"
 "any"
-"ElleMeta"; Added ElleMeta as a builtin type
+"ElleMeta"; ElleMeta as a builtin type
 ]@type.builtin
 
 ; Generic parameters
 (generic_parameters
   "<" @punctuation.bracket
-  (identifier) @type
   ">" @punctuation.bracket)
+
+(generic_parameters
+  (identifier) @type)
 
 ; Struct generics
 (struct_definition
   (generic_parameters
     "<" @punctuation.bracket
-    (identifier) @type ; Changed to match other T usage
     ">" @punctuation.bracket))
+
+(struct_definition
+  (generic_parameters
+    (identifier) @type))
 
 ; Array type brackets
 (array_type
@@ -149,7 +154,6 @@
 ","
 "::"
 "->"
-"/"
 ]@punctuation.delimiter
 
 ; Identifiers
