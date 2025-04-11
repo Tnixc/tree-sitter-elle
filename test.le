@@ -5,8 +5,9 @@ pub fn add<T>(T x, T y) -> T {
     return x + y;
 }
 
-local struct Foo<T> @nofmt {
+local struct Foo<T, V> @nofmt {
     T a;
+    V b;
 };
 
 fn bar(ElleMeta meta, ...args) {
