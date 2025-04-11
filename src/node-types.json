@@ -36,16 +36,27 @@
   {
     "type": "assignment_statement",
     "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "expression",
-          "named": true
-        }
-      ]
+    "fields": {
+      "set": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "expression",
+            "named": true
+          }
+        ]
+      },
+      "value": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "expression",
+            "named": true
+          }
+        ]
+      }
     }
   },
   {
@@ -265,33 +276,17 @@
             "named": true
           },
           {
-            "type": "parenthesized_expression",
-            "named": true
-          },
-          {
             "type": "qualified_identifier",
             "named": true
           }
         ]
       },
-      "generic_arguments": {
-        "multiple": true,
+      "generic_parameters": {
+        "multiple": false,
         "required": false,
         "types": [
           {
-            "type": ",",
-            "named": false
-          },
-          {
-            "type": "<",
-            "named": false
-          },
-          {
-            "type": ">",
-            "named": false
-          },
-          {
-            "type": "type",
+            "type": "generic_parameters",
             "named": true
           }
         ]
@@ -308,10 +303,6 @@
       "types": [
         {
           "type": "expression",
-          "named": true
-        },
-        {
-          "type": "type",
           "named": true
         }
       ]
@@ -762,11 +753,11 @@
       "required": true,
       "types": [
         {
-          "type": "identifier",
+          "type": "generic_parameters",
           "named": true
         },
         {
-          "type": "type",
+          "type": "identifier",
           "named": true
         }
       ]
@@ -1714,6 +1705,10 @@
   },
   {
     "type": "<>",
+    "named": false
+  },
+  {
+    "type": "<>=",
     "named": false
   },
   {
