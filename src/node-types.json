@@ -911,6 +911,26 @@
   {
     "type": "global_directive",
     "named": true,
+    "fields": {
+      "directives": {
+        "multiple": true,
+        "required": true,
+        "types": [
+          {
+            "type": ",",
+            "named": false
+          },
+          {
+            "type": "global_directive_option",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "global_directive_option",
+    "named": true,
     "fields": {}
   },
   {

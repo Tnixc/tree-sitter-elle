@@ -35,9 +35,25 @@ module.exports = grammar({
     module_path: ($) => seq(repeat(seq($.identifier, "/")), $.identifier),
 
     global_directive: ($) =>
-      seq("global", commaSep(choice("pub", "external")), ";"),
+      seq(
+        "global",
+        field(
+          "directives",
+          seq(
+            $._global_directive_option,
+            repeat(seq(",", $._global_directive_option)),
+            optional(","),
+          ),
+        ),
+        ";",
+      ),
 
-    // Function definitions
+    _global_directive_option: ($) =>
+      choice(
+        "pub",
+        "external",
+      ),
+
     function_definition: ($) =>
       seq(
         optional("pub"),

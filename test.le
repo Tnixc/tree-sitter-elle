@@ -1,4 +1,4 @@
-global pub;
+global pub, external;
 use std/prelude;
 
 pub fn add<T>(T x, T y) -> T {
