@@ -660,6 +660,10 @@
           "named": true
         },
         {
+          "type": "qualified_identifier",
+          "named": true
+        },
+        {
           "type": "range_expression",
           "named": true
         },
@@ -727,17 +731,36 @@
   {
     "type": "external_function_declaration",
     "named": true,
-    "fields": {},
+    "fields": {
+      "name": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "exact_literal",
+            "named": true
+          },
+          {
+            "type": "identifier",
+            "named": true
+          },
+          {
+            "type": "qualified_identifier",
+            "named": true
+          }
+        ]
+      }
+    },
     "children": {
       "multiple": true,
-      "required": true,
+      "required": false,
       "types": [
         {
           "type": "attributes",
           "named": true
         },
         {
-          "type": "identifier",
+          "type": "generic_parameters",
           "named": true
         },
         {

@@ -100,9 +100,16 @@ module.exports = grammar({
     external_function_declaration: ($) =>
       seq(
         optional("pub"),
+        optional("local"),
+        optional("!pub"),
+        optional("!local"),
         "external",
         "fn",
-        $.identifier,
+        field(
+          "name",
+          choice($.identifier, $.qualified_identifier, $.exact_literal),
+        ),
+        optional($.generic_parameters),
         "(",
         optional($.parameter_list),
         ")",
@@ -339,6 +346,7 @@ module.exports = grammar({
         $.range_expression,
         $.cast_expression,
         $.identifier,
+        $.qualified_identifier,
         $.directive_expression,
         $.sigil_expression,
       ),
