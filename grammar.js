@@ -196,7 +196,7 @@ module.exports = grammar({
     // Types
     type: ($) =>
       prec(
-        1,
+        10,
         choice(
           "void",
           "bool",
@@ -274,12 +274,13 @@ module.exports = grammar({
       ),
 
     assignment_statement: ($) =>
-      seq(
-        field("set", $.expression),
-        choice(...ASSIGNMENT_OPERATORS),
-        field("value", $.expression),
-        ";",
-      ),
+      prec(50,
+        seq(
+          field("set", $.expression),
+          choice(...ASSIGNMENT_OPERATORS),
+          field("value", $.expression),
+          ";",
+        )),
 
     if_statement: ($) =>
       prec.right(
