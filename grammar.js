@@ -9,7 +9,6 @@ module.exports = grammar({
   conflicts: ($) => [
     [$.range_expression],
     [$.while_statement, $.parenthesized_expression],
-    [$.expression, $._binary_operand],
   ],
 
   rules: {
@@ -22,6 +21,7 @@ module.exports = grammar({
           $.external_function_declaration,
           $.struct_definition,
           $.global_directive,
+          $.namespace_directive
         ),
       ),
 
@@ -33,6 +33,16 @@ module.exports = grammar({
     import_statement: ($) => seq("use", $.module_path, ";"),
 
     module_path: ($) => seq(repeat(seq($.identifier, "/")), $.identifier),
+
+    namespace_directive: ($) =>
+      seq(
+        "namespace",
+        field(
+          "name",
+          $.identifier
+        ),
+        ";",
+      ),
 
     global_directive: ($) =>
       seq(
@@ -105,6 +115,8 @@ module.exports = grammar({
         commaSep1(
           choice($.parameter, $.variadic_parameter, $.no_format_parameter),
         ),
+        // Types
+        commaSep1($.type),
       ),
 
     parameter: ($) => seq($.type, $.identifier),
@@ -143,7 +155,7 @@ module.exports = grammar({
         optional("!pub"),
         optional("!local"),
         "const",
-        $.type,
+        optional($.type),
         $.identifier,
         "=",
         $.expression,
@@ -370,31 +382,6 @@ module.exports = grammar({
 
     expression_list: ($) => commaSep1($.expression),
 
-    _binary_operand: ($) =>
-      choice(
-        $.identifier,
-        $.binary_expression,
-        $.call_expression,
-        $.unary_expression,
-        $.parenthesized_expression,
-        $.member_expression,
-        $.subscript_expression,
-        $.conditional_expression,
-        $.numeric_literal,
-        $.string_literal,
-        $.boolean_literal,
-        $.character_literal,
-        $.array_literal,
-        $.tuple_literal,
-        $.triple_literal,
-        // $.struct_literal is intentionally excluded
-        $.lambda_expression,
-        $.range_expression,
-        $.cast_expression,
-        // $.directive_expression, //probably can't compare these either
-        // $.sigil_expression,
-      ),
-
     binary_expression: ($) => {
       const table = [
         ["*", 9],
@@ -423,9 +410,9 @@ module.exports = grammar({
           return prec.left(
             precedence,
             seq(
-              field("left", $._binary_operand),
+              field("left", $.expression),
               field("operator", operator.toString()),
-              field("right", $._binary_operand),
+              field("right", $.expression),
             ),
           );
         }),

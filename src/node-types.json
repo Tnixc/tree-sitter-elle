@@ -106,75 +106,7 @@
         "required": true,
         "types": [
           {
-            "type": "array_literal",
-            "named": true
-          },
-          {
-            "type": "binary_expression",
-            "named": true
-          },
-          {
-            "type": "boolean_literal",
-            "named": true
-          },
-          {
-            "type": "call_expression",
-            "named": true
-          },
-          {
-            "type": "cast_expression",
-            "named": true
-          },
-          {
-            "type": "character_literal",
-            "named": true
-          },
-          {
-            "type": "conditional_expression",
-            "named": true
-          },
-          {
-            "type": "identifier",
-            "named": true
-          },
-          {
-            "type": "lambda_expression",
-            "named": true
-          },
-          {
-            "type": "member_expression",
-            "named": true
-          },
-          {
-            "type": "numeric_literal",
-            "named": true
-          },
-          {
-            "type": "parenthesized_expression",
-            "named": true
-          },
-          {
-            "type": "range_expression",
-            "named": true
-          },
-          {
-            "type": "string_literal",
-            "named": true
-          },
-          {
-            "type": "subscript_expression",
-            "named": true
-          },
-          {
-            "type": "triple_literal",
-            "named": true
-          },
-          {
-            "type": "tuple_literal",
-            "named": true
-          },
-          {
-            "type": "unary_expression",
+            "type": "expression",
             "named": true
           }
         ]
@@ -266,75 +198,7 @@
         "required": true,
         "types": [
           {
-            "type": "array_literal",
-            "named": true
-          },
-          {
-            "type": "binary_expression",
-            "named": true
-          },
-          {
-            "type": "boolean_literal",
-            "named": true
-          },
-          {
-            "type": "call_expression",
-            "named": true
-          },
-          {
-            "type": "cast_expression",
-            "named": true
-          },
-          {
-            "type": "character_literal",
-            "named": true
-          },
-          {
-            "type": "conditional_expression",
-            "named": true
-          },
-          {
-            "type": "identifier",
-            "named": true
-          },
-          {
-            "type": "lambda_expression",
-            "named": true
-          },
-          {
-            "type": "member_expression",
-            "named": true
-          },
-          {
-            "type": "numeric_literal",
-            "named": true
-          },
-          {
-            "type": "parenthesized_expression",
-            "named": true
-          },
-          {
-            "type": "range_expression",
-            "named": true
-          },
-          {
-            "type": "string_literal",
-            "named": true
-          },
-          {
-            "type": "subscript_expression",
-            "named": true
-          },
-          {
-            "type": "triple_literal",
-            "named": true
-          },
-          {
-            "type": "tuple_literal",
-            "named": true
-          },
-          {
-            "type": "unary_expression",
+            "type": "expression",
             "named": true
           }
         ]
@@ -1056,6 +920,22 @@
     }
   },
   {
+    "type": "namespace_directive",
+    "named": true,
+    "fields": {
+      "name": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "identifier",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
     "type": "no_format_parameter",
     "named": true,
     "fields": {},
@@ -1111,6 +991,10 @@
         },
         {
           "type": "parameter",
+          "named": true
+        },
+        {
+          "type": "type",
           "named": true
         },
         {
@@ -1241,6 +1125,10 @@
         },
         {
           "type": "import_statement",
+          "named": true
+        },
+        {
+          "type": "namespace_directive",
           "named": true
         },
         {
@@ -2006,6 +1894,10 @@
   },
   {
     "type": "local",
+    "named": false
+  },
+  {
+    "type": "namespace",
     "named": false
   },
   {
