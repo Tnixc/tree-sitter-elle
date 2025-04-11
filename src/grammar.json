@@ -1807,6 +1807,14 @@
                 {
                   "type": "SYMBOL",
                   "name": "identifier"
+                },
+                {
+                  "type": "STRING",
+                  "value": "="
+                },
+                {
+                  "type": "SYMBOL",
+                  "name": "expression"
                 }
               ]
             },
@@ -1820,6 +1828,14 @@
                 {
                   "type": "SYMBOL",
                   "name": "identifier"
+                },
+                {
+                  "type": "STRING",
+                  "value": "="
+                },
+                {
+                  "type": "SYMBOL",
+                  "name": "expression"
                 }
               ]
             },
@@ -1833,18 +1849,14 @@
                 {
                   "type": "STRING",
                   "value": ":="
+                },
+                {
+                  "type": "SYMBOL",
+                  "name": "expression"
                 }
               ]
             }
           ]
-        },
-        {
-          "type": "STRING",
-          "value": "="
-        },
-        {
-          "type": "SYMBOL",
-          "name": "expression"
         }
       ]
     },
@@ -3025,7 +3037,7 @@
           },
           {
             "type": "SYMBOL",
-            "name": "expression"
+            "name": "type"
           },
           {
             "type": "TOKEN",
@@ -3876,10 +3888,6 @@
   "conflicts": [
     [
       "range_expression"
-    ],
-    [
-      "_type_cast",
-      "parenthesized_expression"
     ]
   ],
   "precedences": [],

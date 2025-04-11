@@ -11,7 +11,6 @@ module.exports = grammar({
 
   conflicts: ($) => [
     [$.range_expression],
-    [$._type_cast, $.parenthesized_expression],
   ],
 
   rules: {
@@ -274,13 +273,15 @@ module.exports = grammar({
       ),
 
     assignment_statement: ($) =>
-      prec(50,
+      prec(
+        50,
         seq(
           field("set", $.expression),
           choice(...ASSIGNMENT_OPERATORS),
           field("value", $.expression),
           ";",
-        )),
+        ),
+      ),
 
     if_statement: ($) =>
       prec.right(
@@ -324,12 +325,10 @@ module.exports = grammar({
     variable_declaration_no_semi: ($) =>
       seq(
         choice(
-          seq($.type, $.identifier),
-          seq("let", $.identifier),
-          seq($.identifier, ":="),
+          seq($.type, $.identifier, "=", $.expression),
+          seq("let", $.identifier, "=", $.expression),
+          seq($.identifier, ":=", $.expression),
         ),
-        "=",
-        $.expression,
       ),
 
     assignment_statement_no_semi: ($) =>
@@ -489,14 +488,10 @@ module.exports = grammar({
           field("alternative", $.expression),
         ),
       ),
-    _type_cast: ($) =>
-      prec.left(-10, seq(token("("), $.expression, token(")"))),
+
+    _type_cast: ($) => prec.left(-10, seq(token("("), $.type, token(")"))),
 
     cast_expression: ($) => seq($._type_cast, $.expression),
-    // prec.left(
-    //   60,
-    //   seq(token("("), $.type, token(")"), $.expression),
-    // ),
 
     numeric_literal: ($) => {
       const hex = /0[xX][0-9a-fA-F](_?[0-9a-fA-F])*/;
