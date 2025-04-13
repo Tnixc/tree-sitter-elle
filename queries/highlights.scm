@@ -24,6 +24,7 @@
 (generic_type) @type
 (generic_parameters (identifier) @type)
 
+; hmm for primitives, @type or @keyword?
 "ElleMeta" @type
 "void" @type
 "bool" @type
@@ -51,8 +52,6 @@
 ; Keywords
 "pub" @keyword
 "!pub" @keyword
-"local" @keyword
-"!local" @keyword
 "fn" @keyword
 "if" @keyword
 "else" @keyword
@@ -90,6 +89,7 @@
 (directive_expression name: _ @embedded)
 
 (sigil_expression (identifier) @embedded)
+(sigil_expression "$" @punctuation)
 
 ; last item of qualified_identifier
 (qualified_identifier name: (identifier) @function)
@@ -108,6 +108,7 @@
 
 ; Attributes
 (attribute (identifier) @attribute)
+
 
 ; Operators
 [
@@ -155,8 +156,6 @@
   "]"
   "{"
   "}"
-  "<"
-  ">"
 ] @punctuation.bracket
 
 [
@@ -168,7 +167,6 @@
 "..." @punctuation.special
 
 [
-  "$"
   "#"
   ";"
   "->"
@@ -179,3 +177,7 @@
 (import_statement (module_path) @primary)
 
 (import_statement (module_path "/" @punctuation.delimiter))
+
+; tuples and triples
+(tuple_literal "$" @constructor)
+(triple_literal "$$" @constructor)

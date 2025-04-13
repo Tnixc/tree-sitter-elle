@@ -224,31 +224,7 @@
           "members": [
             {
               "type": "STRING",
-              "value": "local"
-            },
-            {
-              "type": "BLANK"
-            }
-          ]
-        },
-        {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "STRING",
               "value": "!pub"
-            },
-            {
-              "type": "BLANK"
-            }
-          ]
-        },
-        {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "STRING",
-              "value": "!local"
             },
             {
               "type": "BLANK"
@@ -751,31 +727,7 @@
           "members": [
             {
               "type": "STRING",
-              "value": "local"
-            },
-            {
-              "type": "BLANK"
-            }
-          ]
-        },
-        {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "STRING",
               "value": "!pub"
-            },
-            {
-              "type": "BLANK"
-            }
-          ]
-        },
-        {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "STRING",
-              "value": "!local"
             },
             {
               "type": "BLANK"
@@ -902,31 +854,7 @@
           "members": [
             {
               "type": "STRING",
-              "value": "local"
-            },
-            {
-              "type": "BLANK"
-            }
-          ]
-        },
-        {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "STRING",
               "value": "!pub"
-            },
-            {
-              "type": "BLANK"
-            }
-          ]
-        },
-        {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "STRING",
-              "value": "!local"
             },
             {
               "type": "BLANK"
@@ -987,31 +915,7 @@
           "members": [
             {
               "type": "STRING",
-              "value": "local"
-            },
-            {
-              "type": "BLANK"
-            }
-          ]
-        },
-        {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "STRING",
               "value": "!pub"
-            },
-            {
-              "type": "BLANK"
-            }
-          ]
-        },
-        {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "STRING",
-              "value": "!local"
             },
             {
               "type": "BLANK"

@@ -1632,10 +1632,6 @@
     "named": false
   },
   {
-    "type": "!local",
-    "named": false
-  },
-  {
     "type": "!pub",
     "named": false
   },
@@ -1954,10 +1950,6 @@
   },
   {
     "type": "let",
-    "named": false
-  },
-  {
-    "type": "local",
     "named": false
   },
   {

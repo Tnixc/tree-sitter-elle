@@ -81,9 +81,7 @@ module.exports = grammar({
     function_definition: ($) =>
       seq(
         optional("pub"),
-        optional("local"),
         optional("!pub"),
-        optional("!local"),
         optional("!external"),
         "fn",
         field(
@@ -149,9 +147,7 @@ module.exports = grammar({
     external_function_declaration: ($) =>
       seq(
         optional("pub"),
-        optional("local"),
         optional("!pub"),
-        optional("!local"),
         "external",
         "fn",
         field(
@@ -171,9 +167,7 @@ module.exports = grammar({
     constant_definition: ($) =>
       seq(
         optional("pub"),
-        optional("local"),
         optional("!pub"),
-        optional("!local"),
         "const",
         optional($.type),
         $.identifier,
@@ -186,9 +180,7 @@ module.exports = grammar({
     struct_definition: ($) =>
       seq(
         optional("pub"),
-        optional("local"),
         optional("!pub"),
-        optional("!local"),
         "struct",
         $.identifier,
         optional($.generic_parameters),
