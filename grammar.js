@@ -11,6 +11,9 @@ module.exports = grammar({
 
   conflicts: ($) => [
     [$.range_expression],
+    [$.pointer_type],
+    [$.while_statement, $.parenthesized_expression],
+    [$.expression, $.type],
   ],
 
   rules: {
@@ -96,7 +99,7 @@ module.exports = grammar({
       seq(
         "@",
         $.identifier,
-        optional(seq("(", optional($.expression_list), ")")),
+        optional(seq("(", optional(choice($.expression_list, "$", "$$")), ")")), // maybe this can be anything inside?
       ),
 
     // Fix: Restructure parameter_list to never match empty string
@@ -194,33 +197,30 @@ module.exports = grammar({
 
     // Types
     type: ($) =>
-      prec(
-        10,
-        choice(
-          "void",
-          "bool",
-          "char",
-          "i8",
-          "i16",
-          "i32",
-          "i64",
-          "f32",
-          "f64",
-          "fn",
-          "string",
-          "any",
-          "FILE",
-          $.generic_type,
-          $.identifier,
-          $.array_type,
-          $.pointer_type,
-          $.tuple_type,
-        ),
+      choice(
+        "void",
+        "bool",
+        "char",
+        "i8",
+        "i16",
+        "i32",
+        "i64",
+        "f32",
+        "f64",
+        "fn",
+        "string",
+        "any",
+        "FILE",
+        $.generic_type,
+        $.identifier,
+        $.array_type,
+        $.pointer_type,
+        $.tuple_type,
       ),
 
     array_type: ($) => prec.left(1, seq($.type, "[]", repeat("[]"))),
 
-    pointer_type: ($) => prec.left(13, seq($.type, "*", repeat("*"))),
+    pointer_type: ($) => seq($.type, token("*"), repeat(token("*"))),
 
     // Generic type: for types like Foo<Bar>
     generic_type: ($) =>
@@ -351,39 +351,37 @@ module.exports = grammar({
 
     // Expressions
     expression: ($) =>
-      prec(
-        2,
-        choice(
-          $.cast_expression,
-          $.call_expression,
-          $.binary_expression,
-          $.unary_expression,
-          $.parenthesized_expression,
-          $.member_expression,
-          $.subscript_expression,
-          $.conditional_expression,
-          $.numeric_literal,
-          $.string_literal,
-          $.boolean_literal,
-          $.character_literal,
-          $.array_literal,
-          $.tuple_literal,
-          $.triple_literal,
-          $.struct_literal,
-          $.lambda_expression,
-          $.range_expression,
-          $.identifier,
-          $.qualified_identifier,
-          $.directive_expression,
-          $.sigil_expression,
-        ),
+      choice(
+        $.cast_expression,
+        $.call_expression,
+        $.binary_expression,
+        $.unary_expression,
+        $.parenthesized_expression,
+        $.member_expression,
+        $.subscript_expression,
+        $.conditional_expression,
+        $.numeric_literal,
+        $.string_literal,
+        $.boolean_literal,
+        $.character_literal,
+        $.array_literal,
+        $.tuple_literal,
+        $.triple_literal,
+        $.struct_literal,
+        $.lambda_expression,
+        $.range_expression,
+        $.identifier,
+        $.qualified_identifier,
+        $.directive_expression,
+        $.sigil_expression,
+        // FIXME: determine if return is a valid expression here
       ),
 
     expression_list: ($) => commaSep1($.expression),
 
     binary_expression: ($) => {
       const table = [
-        ["*", 9],
+        ["*", 10],
         ["/", 9],
         ["%", 9],
         ["+", 8],
@@ -410,7 +408,7 @@ module.exports = grammar({
             precedence,
             seq(
               field("left", $.expression),
-              field("operator", operator.toString()),
+              field("operator", token(operator)),
               field("right", $.expression),
             ),
           );
@@ -427,8 +425,10 @@ module.exports = grammar({
         ),
       ),
 
+    // parenthesized_expression: ($) =>
+    //   prec(15, seq(token("("), $.expression, token(")"))),
     parenthesized_expression: ($) =>
-      prec.left(-10, seq(token("("), $.expression, token(")"))),
+      prec.dynamic(20, seq("(", field("inner", $.expression), ")")),
 
     call_expression: ($) =>
       choice(
@@ -441,6 +441,7 @@ module.exports = grammar({
                 $.identifier,
                 $.qualified_identifier,
                 $.member_expression,
+                $.exact_literal,
               ),
             ),
             optional(field("generic_parameters", $.generic_parameters)),
@@ -489,9 +490,17 @@ module.exports = grammar({
         ),
       ),
 
-    _type_cast: ($) => prec.left(-10, seq(token("("), $.type, token(")"))),
+    // _type_cast: ($) => prec.left(-10, seq(token("("), $.type, token(")"))),
 
-    cast_expression: ($) => seq($._type_cast, $.expression),
+    // cast_expression: ($) => seq($._type_cast, $.expression),
+    cast_expression: ($) =>
+      prec.dynamic(
+        19,
+        seq(
+          seq(token("("), field("cast_type", $.type), token(")")),
+          field("value", $.expression),
+        ),
+      ),
 
     numeric_literal: ($) => {
       const hex = /0[xX][0-9a-fA-F](_?[0-9a-fA-F])*/;
@@ -614,6 +623,7 @@ module.exports = grammar({
         ),
       ),
 
+    // "arbitrary names which may be invalid in Elle but valid in the IR"
     exact_literal: ($) => seq("`", /[^`]+/, "`"),
 
     static_buffer: ($) =>
