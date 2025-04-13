@@ -2,7 +2,7 @@
 (identifier) @variable
 (qualified_identifier) @variable
 
-; ; Assume uppercase names are enum constructors
+; Assume uppercase names are structs
 ((identifier) @constructor
   (#match? @constructor "^[A-Z]"))
 
@@ -10,15 +10,33 @@
 ((identifier) @constant
   (#match? @constant "^[A-Z][A-Z\\d_]+$"))
 
+; If the regex doesn't match, at least it's right once
+(struct_definition (identifier) @constructor)
+(constant_definition (identifier) @constant)
+
 ; Types
 (type) @type
 (type (identifier) @type)
 (array_type) @type
 (pointer_type) @type
-(generic_type) @type
 (tuple_type) @type
 
+(generic_type) @type
 (generic_parameters (identifier) @type)
+
+"ElleMeta" @type
+"void" @type
+"bool" @type
+"char" @type
+"i8" @type
+"i16" @type
+"i32" @type
+"i64" @type
+"f32" @type
+"f64" @type
+"string" @type
+"any" @type
+"FILE" @type
 
 ; Constants and literals
 (numeric_literal) @number
@@ -32,7 +50,9 @@
 
 ; Keywords
 "pub" @keyword
+"!pub" @keyword
 "local" @keyword
+"!local" @keyword
 "fn" @keyword
 "if" @keyword
 "else" @keyword
@@ -50,18 +70,6 @@
 "namespace" @keyword
 "global" @keyword
 "let" @keyword
-"void" @type
-"bool" @type
-"char" @type
-"i8" @type
-"i16" @type
-"i32" @type
-"i64" @type
-"f32" @type
-"f64" @type
-"string" @type
-"any" @type
-"FILE" @type
 
 ; Function definition
 (function_definition name: (identifier) @function)
@@ -77,6 +85,13 @@
 (call_expression function: (member_expression property: (identifier) @function))
 (call_expression function: (exact_literal) @function)
 
+
+; Directives and sigils
+(directive_expression name: _ @embedded)
+
+(sigil_expression (identifier) @embedded)
+
+; last item of qualified_identifier
 (qualified_identifier name: (identifier) @function)
 
 ; Parameters
@@ -132,8 +147,6 @@
   ":="
 ] @operator
 
-; Directives and sigils
-
 ; Punctuation
 [
   "("
@@ -149,19 +162,20 @@
 [
   ","
   "."
+  "::"
 ] @punctuation.delimiter
 
 "..." @punctuation.special
 
 [
   "$"
-  "::"
+  "#"
   ";"
+  "->"
+  "@"
 ] @punctuation
 
 ; Import statements
 (import_statement (module_path) @primary)
 
-(directive_expression (identifier) @function)
-
-(sigil_expression (identifier) @function)
+(import_statement (module_path "/" @punctuation.delimiter))

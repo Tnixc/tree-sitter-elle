@@ -602,12 +602,12 @@ module.exports = grammar({
       ),
 
     tuple_literal: ($) =>
-      prec(11, seq("$(", $.expression, ",", $.expression, ")")),
+      prec(11, seq("$", token.immediate("("), $.expression, ",", $.expression, ")")),
 
     triple_literal: ($) =>
       prec(
         11,
-        seq("$$(", $.expression, ",", $.expression, ",", $.expression, ")"),
+        seq("$$", token.immediate("("), $.expression, ",", $.expression, ",", $.expression, ")"),
       ),
 
     struct_literal: ($) =>
