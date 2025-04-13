@@ -304,7 +304,14 @@ module.exports = grammar({
       choice(seq("else", $.block), seq("else", $.if_statement)),
 
     while_statement: ($) =>
-      seq("while", optional("("), $.expression, optional(")"), $.block),
+      seq(
+        "while",
+        choice(
+          seq("(", $.expression, ")"),
+          $.expression,
+        ),
+        $.block,
+      ),
 
     for_statement: ($) =>
       seq(
@@ -352,6 +359,7 @@ module.exports = grammar({
     // Expressions
     expression: ($) =>
       choice(
+        $.assignment_expression,
         $.cast_expression,
         $.call_expression,
         $.binary_expression,
@@ -378,6 +386,16 @@ module.exports = grammar({
       ),
 
     expression_list: ($) => commaSep1($.expression),
+
+    assignment_expression: ($) =>
+      prec(
+        50,
+        seq(
+          field("left", $.identifier),
+          "=",
+          field("right", $.expression),
+        ),
+      ),
 
     binary_expression: ($) => {
       const table = [
@@ -481,19 +499,20 @@ module.exports = grammar({
     conditional_expression: ($) =>
       prec.right(
         1,
-        choice(seq(
-          field("condition", $.expression),
-          "?",
-          field("consequence", $.expression),
-          ":",
-          field("alternative", $.expression),
-        ),
+        choice(
+          seq(
+            field("condition", $.expression),
+            "?",
+            field("consequence", $.expression),
+            ":",
+            field("alternative", $.expression),
+          ),
           seq(
             field("condition", $.expression),
             "?", // implicit consequence = condition (truthy check, else replace with alternative)
             ":",
             field("alternative", $.expression),
-          )
+          ),
         ),
       ),
 
