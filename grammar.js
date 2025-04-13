@@ -314,16 +314,27 @@ module.exports = grammar({
       ),
 
     for_statement: ($) =>
-      seq(
-        "for",
-        optional("("),
-        choice($.variable_declaration_no_semi, $.expression),
-        ";",
-        $.expression,
-        ";",
-        choice($.assignment_statement_no_semi, $.expression),
-        optional(")"),
-        $.block,
+      choice(
+        seq(
+          "for",
+          choice($.variable_declaration_no_semi, $.expression),
+          ";",
+          $.expression,
+          ";",
+          choice($.assignment_statement_no_semi, $.expression),
+          $.block,
+        ),
+        seq(
+          "for",
+          "(",
+          choice($.variable_declaration_no_semi, $.expression),
+          ";",
+          $.expression,
+          ";",
+          choice($.assignment_statement_no_semi, $.expression),
+          ")",
+          $.block,
+        ),
       ),
 
     foreach_statement: ($) =>
