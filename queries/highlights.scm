@@ -1,166 +1,167 @@
-; Comments
-(comment)@comment
+; Identifiers
+(identifier) @variable
+(qualified_identifier) @variable
 
-; Keywords
-[
-"use"
-"fn"
-"const"
-"struct"
-"if"
-"else"
-"while"
-"for"
-"in"
-"return"
-"break"
-"continue"
-"defer"
-"external"
-"pub"
-"local"
-"global"
-"let"
-]@keyword
+; ; Assume uppercase names are enum constructors
+((identifier) @constructor
+  (#match? @constructor "^[A-Z]"))
 
-(struct_definition
-  "struct" @keyword)
+; Assume all-caps names are constants
+((identifier) @constant
+  (#match? @constant "^[A-Z][A-Z\\d_]+$"))
 
 ; Types
-(type)@type
-[
-"void"
-"bool"
-"char"
-"i8"
-"i16"
-"i32"
-"i64"
-"f32"
-"f64"
-"string"
-"any"
-"ElleMeta"; ElleMeta as a builtin type
-]@type.builtin
+(type) @type
+(type (identifier) @type)
+(array_type) @type
+(pointer_type) @type
+(generic_type) @type
+(tuple_type) @type
 
-; Generic parameters
-(generic_parameters
-  "<" @punctuation.bracket
-  ">" @punctuation.bracket)
+(generic_parameters (identifier) @type)
 
-(generic_parameters
-  (identifier) @type)
+; Constants and literals
+(numeric_literal) @number
+(string_literal) @string
+(character_literal) @string
+(boolean_literal) @boolean
+(escape_sequence) @string.escape
 
-; Struct generics
-(struct_definition
-  (generic_parameters
-    "<" @punctuation.bracket
-    ">" @punctuation.bracket))
+; Comments
+(comment) @comment
 
-(struct_definition
-  (generic_parameters
-    (identifier) @type))
+; Keywords
+"pub" @keyword
+"local" @keyword
+"fn" @keyword
+"if" @keyword
+"else" @keyword
+"while" @keyword
+"for" @keyword
+"in" @keyword
+"defer" @keyword
+"return" @keyword
+"break" @keyword
+"continue" @keyword
+"struct" @keyword
+"const" @keyword
+"external" @keyword
+"use" @keyword
+"namespace" @keyword
+"global" @keyword
+"let" @keyword
+"void" @type
+"bool" @type
+"char" @type
+"i8" @type
+"i16" @type
+"i32" @type
+"i64" @type
+"f32" @type
+"f64" @type
+"string" @type
+"any" @type
+"FILE" @type
 
-; Array type brackets
-(array_type
-  "[]" @punctuation.bracket)
+; Function definition
+(function_definition name: (identifier) @function)
+(function_definition name: (qualified_identifier) @function)
+(function_definition name: (exact_literal) @function)
+(external_function_declaration name: (identifier) @function)
+(external_function_declaration name: (qualified_identifier) @function)
+(external_function_declaration name: (exact_literal) @function)
 
-; Pointer type operators
-(pointer_type
-  "*" @operator); Added to highlight pointer * operators
+; Function calls
+(call_expression function: (identifier) @function)
+(call_expression function: (qualified_identifier) @function)
+(call_expression function: (member_expression property: (identifier) @function))
+(call_expression function: (exact_literal) @function)
+
+(qualified_identifier name: (identifier) @function)
+
+; Parameters
+(parameter (identifier) @variable.special)
+(variadic_parameter (identifier) @variable.special)
+(no_format_parameter (identifier) @variable)
+
+; Struct fields
+(struct_field (identifier) @property)
+(struct_field_initializer (identifier) @property)
+
+; Member access
+(member_expression property: (identifier) @property)
+
+; Attributes
+(attribute (identifier) @attribute)
 
 ; Operators
 [
-"="
-"+"
-"-"
-"*"
-"/"
-"%"
-"^"
-"&"
-"|"
-"~"
-"!"
-"<"
-">"
-"<="
-">="
-"=="
-"!="
-"+="
-"-="
-"*="
-"/="
-"<<"
-">>"
-"&&"
-"||"
-"<>"
-".."
-"..="
-":="
-]@operator
+  "+"
+  "-"
+  "*"
+  "/"
+  "%"
+  "&"
+  "|"
+  "^"
+  "=="
+  "!="
+  "<"
+  ">"
+  "<="
+  ">="
+  "<<"
+  ">>"
+  "&&"
+  "||"
+  "<>"
+  "!"
+  "~"
+  "?"
+  ":"
+] @operator
 
-; Functions
-(function_definition
-  (identifier) @function)
+; Assignment operators
+[
+  "="
+  "+="
+  "-="
+  "*="
+  "/="
+  "<>="
+  ":="
+] @operator
 
-; Function calls (including generic calls)
-(call_expression
-  function: (_) @function.call)
-
-(call_expression
-  function: (qualified_identifier
-    (identifier) @namespace
-    (identifier) @function.method.call))
-
-; Variables and parameters
-(parameter
-  (identifier) @variable.parameter)
-
-(variable_declaration
-  (identifier) @variable)
-
-; Attributes
-(attribute
-  "@" @attribute
-  (identifier) @attribute)
-
-; No format directive
-(no_format_parameter
-  "@nofmt" @attribute)
-
-; Literals
-(numeric_literal)@number
-(string_literal)@string
-(character_literal)@character
-(boolean_literal)@boolean
-(escape_sequence)@string.escape
-
-; Directives
-(directive_expression)@function.macro
-(sigil_expression)@function.special
+; Directives and sigils
 
 ; Punctuation
 [
-"("
+  "("
   ")"
-"["
-"]"
-"{"
-"}"
-";"
-","
-"::"
-"->"
-]@punctuation.delimiter
+  "["
+  "]"
+  "{"
+  "}"
+  "<"
+  ">"
+] @punctuation.bracket
 
-; Identifiers
-(exact_literal)@string.special
-(struct_field_initializer
-  (identifier) @property)
-(struct_field
-  (identifier) @property)
-(member_expression
-  (identifier) @property)
+[
+  ","
+  "."
+] @punctuation.delimiter
+
+"..." @punctuation.special
+
+[
+  "$"
+  "::"
+  ";"
+] @punctuation
+
+; Import statements
+(import_statement (module_path) @primary)
+
+(directive_expression (identifier) @function)
+
+(sigil_expression (identifier) @function)
