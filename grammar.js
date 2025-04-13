@@ -1,6 +1,19 @@
 // Tree-sitter grammar for the Elle programming language
 
-const ASSIGNMENT_OPERATORS = ["=", "+=", "-=", "*=", "/=", "<>="];
+const ASSIGNMENT_OPERATORS = [
+  "=",
+  "+=",
+  "-=",
+  "*=",
+  "/=",
+  "<>=",
+  " %=",
+  "^=",
+  "|=",
+  "&=",
+  ">>=",
+  "<<=",
+];
 
 module.exports = grammar({
   name: "elle",
@@ -49,14 +62,7 @@ module.exports = grammar({
     module_path: ($) => seq(repeat(seq($.identifier, "/")), $.identifier),
 
     namespace_directive: ($) =>
-      seq(
-        "namespace",
-        field(
-          "name",
-          $.identifier,
-        ),
-        ";",
-      ),
+      seq("namespace", field("name", $.identifier), ";"),
 
     global_directive: ($) =>
       seq(
@@ -72,11 +78,7 @@ module.exports = grammar({
         ";",
       ),
 
-    _global_directive_option: ($) =>
-      choice(
-        "pub",
-        "external",
-      ),
+    _global_directive_option: ($) => choice("pub", "external"),
 
     function_definition: ($) =>
       seq(
@@ -100,10 +102,7 @@ module.exports = grammar({
 
     qualified_identifier: ($) =>
       prec.left(
-        seq(
-          repeat(seq($.identifier, "::")),
-          field("name", $.identifier),
-        ),
+        seq(repeat(seq($.identifier, "::")), field("name", $.identifier)),
       ),
 
     attributes: ($) => repeat1($.attribute),
@@ -231,14 +230,7 @@ module.exports = grammar({
     pointer_type: ($) => seq($.type, token("*"), repeat(token("*"))),
 
     // Generic type: for types like Foo<Bar>
-    generic_type: ($) =>
-      prec.left(
-        10,
-        seq(
-          $.identifier,
-          $.generic_parameters,
-        ),
-      ),
+    generic_type: ($) => prec.left(10, seq($.identifier, $.generic_parameters)),
 
     tuple_type: ($) => seq("(", $.type, ",", $.type, ")"),
 
@@ -298,10 +290,7 @@ module.exports = grammar({
           token.immediate("if"),
           field(
             "condition",
-            choice(
-              seq(token("("), $.expression, token(")")),
-              $.expression,
-            ),
+            choice(seq(token("("), $.expression, token(")")), $.expression),
           ),
           prec.dynamic(10, field("body", $.block)),
           optional($.else_clause),
@@ -312,14 +301,7 @@ module.exports = grammar({
       choice(seq("else", $.block), seq("else", $.if_statement)),
 
     while_statement: ($) =>
-      seq(
-        "while",
-        choice(
-          seq("(", $.expression, ")"),
-          $.expression,
-        ),
-        $.block,
-      ),
+      seq("while", choice(seq("(", $.expression, ")"), $.expression), $.block),
 
     for_statement: ($) =>
       choice(
@@ -409,11 +391,7 @@ module.exports = grammar({
     assignment_expression: ($) =>
       prec(
         50,
-        seq(
-          field("left", $.identifier),
-          "=",
-          field("right", $.expression),
-        ),
+        seq(field("left", $.identifier), "=", field("right", $.expression)),
       ),
 
     binary_expression: ($) => {
@@ -484,11 +462,7 @@ module.exports = grammar({
             optional(field("generic_parameters", $.generic_parameters)),
             field(
               "arguments",
-              seq(
-                token("("),
-                optional($.expression_list),
-                token(")"),
-              ),
+              seq(token("("), optional($.expression_list), token(")")),
             ),
           ),
         ),
@@ -560,11 +534,7 @@ module.exports = grammar({
     },
 
     string_literal: ($) =>
-      seq(
-        '"',
-        repeat(choice(/[^"\\\n]/, $.escape_sequence)),
-        '"',
-      ),
+      seq('"', repeat(choice(/[^"\\\n]/, $.escape_sequence)), '"'),
 
     escape_sequence: ($) =>
       token.immediate(
@@ -594,12 +564,24 @@ module.exports = grammar({
       ),
 
     tuple_literal: ($) =>
-      prec(11, seq("$", token.immediate("("), $.expression, ",", $.expression, ")")),
+      prec(
+        11,
+        seq("$", token.immediate("("), $.expression, ",", $.expression, ")"),
+      ),
 
     triple_literal: ($) =>
       prec(
         11,
-        seq("$$", token.immediate("("), $.expression, ",", $.expression, ",", $.expression, ")"),
+        seq(
+          "$$",
+          token.immediate("("),
+          $.expression,
+          ",",
+          $.expression,
+          ",",
+          $.expression,
+          ")",
+        ),
       ),
 
     struct_literal: ($) =>
