@@ -8,7 +8,7 @@
 
 ; Assume all-caps names are constants
 ((identifier) @constant
-  (#match? @constant "^[A-Z][A-Z\\d_]+$"))
+    (#match? @constant "^[A-Z][A-Z\\d_]+$"))
 
 ; If the regex doesn't match, at least it's right once
 (struct_definition (identifier) @constructor)
@@ -73,7 +73,7 @@
 ; Function definition
 (function_definition name: (identifier) @function)
 (function_definition name: (qualified_identifier) @function)
-(function_definition name: (exact_literal) @function)
+(function_definition name: (exact_literal) @label)
 (external_function_declaration name: (identifier) @function)
 (external_function_declaration name: (qualified_identifier) @function)
 (external_function_declaration name: (exact_literal) @function)
@@ -84,9 +84,16 @@
 (call_expression function: (member_expression property: (identifier) @function))
 (call_expression function: (exact_literal) @function)
 
+; sigils
+(call_expression function: (identifier) @embedded
+  (#match? @embedded "^\\$"))
 
-; Directives and sigils
-(directive_expression name: _ @embedded)
+; tuples and triples
+(call_expression function: (identifier) @constructor
+  (#match? @constructor "^\\$\\$?$"))
+
+; directives
+(directive_expression name: _ @emphasis	)
 
 ; last item of qualified_identifier
 (qualified_identifier name: (identifier) @function)
@@ -142,13 +149,13 @@
   "*="
   "/="
   "<>="
-  ":="
   "%="
   "^="
   "|="
   "&="
   ">>="
   "<<="
+  ":="
 ] @operator
 
 ; Punctuation
@@ -181,6 +188,3 @@
 
 (import_statement (module_path "/" @punctuation.delimiter))
 
-; tuples and triples
-; (tuple_literal "$" @constructor)
-; (triple_literal "$$" @constructor)
