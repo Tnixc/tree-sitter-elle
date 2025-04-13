@@ -454,43 +454,11 @@
     "fields": {
       "name": {
         "multiple": false,
-        "required": true,
+        "required": false,
         "types": [
           {
-            "type": "alloc",
-            "named": false
-          },
-          {
-            "type": "env",
-            "named": false
-          },
-          {
-            "type": "free",
-            "named": false
-          },
-          {
-            "type": "i",
-            "named": false
-          },
-          {
-            "type": "len",
-            "named": false
-          },
-          {
-            "type": "realloc",
-            "named": false
-          },
-          {
-            "type": "reset_allocator",
-            "named": false
-          },
-          {
-            "type": "set_allocator",
-            "named": false
-          },
-          {
-            "type": "size",
-            "named": false
+            "type": "valid_directives",
+            "named": true
           }
         ]
       }
@@ -1876,10 +1844,6 @@
     "named": false
   },
   {
-    "type": "alloc",
-    "named": false
-  },
-  {
     "type": "any",
     "named": false
   },
@@ -1944,15 +1908,7 @@
     "named": false
   },
   {
-    "type": "free",
-    "named": false
-  },
-  {
     "type": "global",
-    "named": false
-  },
-  {
-    "type": "i",
     "named": false
   },
   {
@@ -1984,10 +1940,6 @@
     "named": false
   },
   {
-    "type": "len",
-    "named": false
-  },
-  {
     "type": "let",
     "named": false
   },
@@ -2008,23 +1960,7 @@
     "named": false
   },
   {
-    "type": "realloc",
-    "named": false
-  },
-  {
-    "type": "reset_allocator",
-    "named": false
-  },
-  {
     "type": "return",
-    "named": false
-  },
-  {
-    "type": "set_allocator",
-    "named": false
-  },
-  {
-    "type": "size",
     "named": false
   },
   {
@@ -2042,6 +1978,10 @@
   {
     "type": "use",
     "named": false
+  },
+  {
+    "type": "valid_directives",
+    "named": true
   },
   {
     "type": "void",

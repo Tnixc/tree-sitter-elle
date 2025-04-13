@@ -638,24 +638,25 @@ module.exports = grammar({
 
     // Directives and sigils
     directive_expression: ($) =>
+      // FIXME: kinda cursed
       prec.left(
         13,
         seq(
           "#",
           choice(
-            seq(field("name", "len"), "(", $.expression, ")"),
-            seq(field("name", "size"), "(", $.type, ")"),
-            seq(field("name", "i"), "(", $.identifier, ")"),
-            field("name", "env"),
+            seq(field("name", $.valid_directives), "(", $.expression, ")"),
+            seq(field("name", $.valid_directives), "(", $.type, ")"),
+            seq(field("name", $.valid_directives), "(", $.identifier, ")"),
+            "env",
             seq(
-              field("name", "alloc"),
+              field("name", $.valid_directives),
               "(",
               $.type,
               optional(seq(",", $.expression)),
               ")",
             ),
             seq(
-              field("name", "realloc"),
+              field("name", $.valid_directives),
               "(",
               $.expression,
               ",",
@@ -663,9 +664,8 @@ module.exports = grammar({
               optional(seq(",", $.expression)),
               ")",
             ),
-            seq(field("name", "free"), "(", $.expression, ")"),
-            seq(field("name", "set_allocator"), "(", $.expression, ")"),
-            seq(field("name", "reset_allocator"), "(", ")"),
+            seq(field("name", $.valid_directives), "(", $.expression, ")"),
+            seq(field("name", $.valid_directives), "(", ")"),
           ),
         ),
       ),
@@ -690,6 +690,9 @@ module.exports = grammar({
 
     // Identifiers
     identifier: ($) => /[a-zA-Z_][a-zA-Z0-9_]*/,
+    
+    // https://github.com/acquitelol/elle/blob/rewrite/README.md#-directives
+    valid_directives: ($) => /(len|size|i|env|alloc|realloc|free|set_allocator|reset_allocator)/,
   },
 });
 

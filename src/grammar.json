@@ -3748,8 +3748,8 @@
                     "type": "FIELD",
                     "name": "name",
                     "content": {
-                      "type": "STRING",
-                      "value": "len"
+                      "type": "SYMBOL",
+                      "name": "valid_directives"
                     }
                   },
                   {
@@ -3773,8 +3773,8 @@
                     "type": "FIELD",
                     "name": "name",
                     "content": {
-                      "type": "STRING",
-                      "value": "size"
+                      "type": "SYMBOL",
+                      "name": "valid_directives"
                     }
                   },
                   {
@@ -3798,8 +3798,8 @@
                     "type": "FIELD",
                     "name": "name",
                     "content": {
-                      "type": "STRING",
-                      "value": "i"
+                      "type": "SYMBOL",
+                      "name": "valid_directives"
                     }
                   },
                   {
@@ -3817,12 +3817,8 @@
                 ]
               },
               {
-                "type": "FIELD",
-                "name": "name",
-                "content": {
-                  "type": "STRING",
-                  "value": "env"
-                }
+                "type": "STRING",
+                "value": "env"
               },
               {
                 "type": "SEQ",
@@ -3831,8 +3827,8 @@
                     "type": "FIELD",
                     "name": "name",
                     "content": {
-                      "type": "STRING",
-                      "value": "alloc"
+                      "type": "SYMBOL",
+                      "name": "valid_directives"
                     }
                   },
                   {
@@ -3877,8 +3873,8 @@
                     "type": "FIELD",
                     "name": "name",
                     "content": {
-                      "type": "STRING",
-                      "value": "realloc"
+                      "type": "SYMBOL",
+                      "name": "valid_directives"
                     }
                   },
                   {
@@ -3931,8 +3927,8 @@
                     "type": "FIELD",
                     "name": "name",
                     "content": {
-                      "type": "STRING",
-                      "value": "free"
+                      "type": "SYMBOL",
+                      "name": "valid_directives"
                     }
                   },
                   {
@@ -3956,33 +3952,8 @@
                     "type": "FIELD",
                     "name": "name",
                     "content": {
-                      "type": "STRING",
-                      "value": "set_allocator"
-                    }
-                  },
-                  {
-                    "type": "STRING",
-                    "value": "("
-                  },
-                  {
-                    "type": "SYMBOL",
-                    "name": "expression"
-                  },
-                  {
-                    "type": "STRING",
-                    "value": ")"
-                  }
-                ]
-              },
-              {
-                "type": "SEQ",
-                "members": [
-                  {
-                    "type": "FIELD",
-                    "name": "name",
-                    "content": {
-                      "type": "STRING",
-                      "value": "reset_allocator"
+                      "type": "SYMBOL",
+                      "name": "valid_directives"
                     }
                   },
                   {
@@ -4100,6 +4071,10 @@
     "identifier": {
       "type": "PATTERN",
       "value": "[a-zA-Z_][a-zA-Z0-9_]*"
+    },
+    "valid_directives": {
+      "type": "PATTERN",
+      "value": "(len|size|i|env|alloc|realloc|free|set_allocator|reset_allocator)"
     }
   },
   "extras": [
