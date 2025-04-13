@@ -384,21 +384,37 @@
       ]
     },
     "qualified_identifier": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "SYMBOL",
-          "name": "identifier"
-        },
-        {
-          "type": "STRING",
-          "value": "::"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "identifier"
-        }
-      ]
+      "type": "PREC_LEFT",
+      "value": 0,
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "REPEAT",
+            "content": {
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "SYMBOL",
+                  "name": "identifier"
+                },
+                {
+                  "type": "STRING",
+                  "value": "::"
+                }
+              ]
+            }
+          },
+          {
+            "type": "FIELD",
+            "name": "name",
+            "content": {
+              "type": "SYMBOL",
+              "name": "identifier"
+            }
+          }
+        ]
+      }
     },
     "attributes": {
       "type": "REPEAT1",
@@ -4073,7 +4089,23 @@
     ],
     [
       "expression",
-      "type"
+      "qualified_identifier"
+    ],
+    [
+      "struct_literal",
+      "qualified_identifier",
+      "call_expression"
+    ],
+    [
+      "type",
+      "qualified_identifier",
+      "expression"
+    ],
+    [
+      "generic_type",
+      "qualified_identifier",
+      "call_expression",
+      "struct_literal"
     ]
   ],
   "precedences": [],

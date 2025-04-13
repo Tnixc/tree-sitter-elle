@@ -13,7 +13,16 @@ module.exports = grammar({
     [$.range_expression],
     [$.pointer_type],
     [$.while_statement, $.parenthesized_expression],
-    [$.expression, $.type],
+    // [$.expression, $.type], (aint no way)
+    [$.expression, $.qualified_identifier],
+    [$.struct_literal, $.qualified_identifier, $.call_expression],
+    [$.type, $.qualified_identifier, $.expression],
+    [
+      $.generic_type,
+      $.qualified_identifier,
+      $.call_expression,
+      $.struct_literal,
+    ],
   ],
 
   rules: {
@@ -91,7 +100,13 @@ module.exports = grammar({
         optional(";"),
       ),
 
-    qualified_identifier: ($) => seq($.identifier, "::", $.identifier),
+    qualified_identifier: ($) =>
+      prec.left(
+        seq(
+          repeat(seq($.identifier, "::")),
+          field("name", $.identifier),
+        ),
+      ),
 
     attributes: ($) => repeat1($.attribute),
 
