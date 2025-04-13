@@ -3745,8 +3745,12 @@
                 "type": "SEQ",
                 "members": [
                   {
-                    "type": "STRING",
-                    "value": "len"
+                    "type": "FIELD",
+                    "name": "name",
+                    "content": {
+                      "type": "STRING",
+                      "value": "len"
+                    }
                   },
                   {
                     "type": "STRING",
@@ -3766,8 +3770,12 @@
                 "type": "SEQ",
                 "members": [
                   {
-                    "type": "STRING",
-                    "value": "size"
+                    "type": "FIELD",
+                    "name": "name",
+                    "content": {
+                      "type": "STRING",
+                      "value": "size"
+                    }
                   },
                   {
                     "type": "STRING",
@@ -3787,8 +3795,12 @@
                 "type": "SEQ",
                 "members": [
                   {
-                    "type": "STRING",
-                    "value": "i"
+                    "type": "FIELD",
+                    "name": "name",
+                    "content": {
+                      "type": "STRING",
+                      "value": "i"
+                    }
                   },
                   {
                     "type": "STRING",
@@ -3805,15 +3817,23 @@
                 ]
               },
               {
-                "type": "STRING",
-                "value": "env"
+                "type": "FIELD",
+                "name": "name",
+                "content": {
+                  "type": "STRING",
+                  "value": "env"
+                }
               },
               {
                 "type": "SEQ",
                 "members": [
                   {
-                    "type": "STRING",
-                    "value": "alloc"
+                    "type": "FIELD",
+                    "name": "name",
+                    "content": {
+                      "type": "STRING",
+                      "value": "alloc"
+                    }
                   },
                   {
                     "type": "STRING",
@@ -3854,8 +3874,12 @@
                 "type": "SEQ",
                 "members": [
                   {
-                    "type": "STRING",
-                    "value": "realloc"
+                    "type": "FIELD",
+                    "name": "name",
+                    "content": {
+                      "type": "STRING",
+                      "value": "realloc"
+                    }
                   },
                   {
                     "type": "STRING",
@@ -3904,8 +3928,12 @@
                 "type": "SEQ",
                 "members": [
                   {
-                    "type": "STRING",
-                    "value": "free"
+                    "type": "FIELD",
+                    "name": "name",
+                    "content": {
+                      "type": "STRING",
+                      "value": "free"
+                    }
                   },
                   {
                     "type": "STRING",
@@ -3925,8 +3953,12 @@
                 "type": "SEQ",
                 "members": [
                   {
-                    "type": "STRING",
-                    "value": "set_allocator"
+                    "type": "FIELD",
+                    "name": "name",
+                    "content": {
+                      "type": "STRING",
+                      "value": "set_allocator"
+                    }
                   },
                   {
                     "type": "STRING",
@@ -3946,8 +3978,12 @@
                 "type": "SEQ",
                 "members": [
                   {
-                    "type": "STRING",
-                    "value": "reset_allocator"
+                    "type": "FIELD",
+                    "name": "name",
+                    "content": {
+                      "type": "STRING",
+                      "value": "reset_allocator"
+                    }
                   },
                   {
                     "type": "STRING",

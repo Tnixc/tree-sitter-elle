@@ -196,7 +196,7 @@ module.exports = grammar({
         "{",
         repeat($.struct_field),
         "}",
-        ";"
+        ";",
       ),
 
     struct_field: ($) => seq($.type, $.identifier, ";"),
@@ -643,13 +643,19 @@ module.exports = grammar({
         seq(
           "#",
           choice(
-            seq("len", "(", $.expression, ")"),
-            seq("size", "(", $.type, ")"),
-            seq("i", "(", $.identifier, ")"),
-            "env",
-            seq("alloc", "(", $.type, optional(seq(",", $.expression)), ")"),
+            seq(field("name", "len"), "(", $.expression, ")"),
+            seq(field("name", "size"), "(", $.type, ")"),
+            seq(field("name", "i"), "(", $.identifier, ")"),
+            field("name", "env"),
             seq(
-              "realloc",
+              field("name", "alloc"),
+              "(",
+              $.type,
+              optional(seq(",", $.expression)),
+              ")",
+            ),
+            seq(
+              field("name", "realloc"),
               "(",
               $.expression,
               ",",
@@ -657,9 +663,9 @@ module.exports = grammar({
               optional(seq(",", $.expression)),
               ")",
             ),
-            seq("free", "(", $.expression, ")"),
-            seq("set_allocator", "(", $.expression, ")"),
-            seq("reset_allocator", "(", ")"),
+            seq(field("name", "free"), "(", $.expression, ")"),
+            seq(field("name", "set_allocator"), "(", $.expression, ")"),
+            seq(field("name", "reset_allocator"), "(", ")"),
           ),
         ),
       ),
