@@ -690,9 +690,20 @@ module.exports = grammar({
 
     // Identifiers
     identifier: ($) => /[a-zA-Z_][a-zA-Z0-9_]*/,
-    
+
     // https://github.com/acquitelol/elle/blob/rewrite/README.md#-directives
-    valid_directives: ($) => /(len|size|i|env|alloc|realloc|free|set_allocator|reset_allocator)/,
+    valid_directives: ($) =>
+      choice(
+        "len",
+        "size",
+        "i",
+        "env",
+        "alloc",
+        "realloc",
+        "free",
+        "set_allocator",
+        "reset_allocator",
+      ),
   },
 });
 

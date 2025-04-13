@@ -4073,8 +4073,45 @@
       "value": "[a-zA-Z_][a-zA-Z0-9_]*"
     },
     "valid_directives": {
-      "type": "PATTERN",
-      "value": "(len|size|i|env|alloc|realloc|free|set_allocator|reset_allocator)"
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "len"
+        },
+        {
+          "type": "STRING",
+          "value": "size"
+        },
+        {
+          "type": "STRING",
+          "value": "i"
+        },
+        {
+          "type": "STRING",
+          "value": "env"
+        },
+        {
+          "type": "STRING",
+          "value": "alloc"
+        },
+        {
+          "type": "STRING",
+          "value": "realloc"
+        },
+        {
+          "type": "STRING",
+          "value": "free"
+        },
+        {
+          "type": "STRING",
+          "value": "set_allocator"
+        },
+        {
+          "type": "STRING",
+          "value": "reset_allocator"
+        }
+      ]
     }
   },
   "extras": [
