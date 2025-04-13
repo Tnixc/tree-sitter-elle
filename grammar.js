@@ -481,12 +481,19 @@ module.exports = grammar({
     conditional_expression: ($) =>
       prec.right(
         1,
-        seq(
+        choice(seq(
           field("condition", $.expression),
           "?",
           field("consequence", $.expression),
           ":",
           field("alternative", $.expression),
+        ),
+          seq(
+            field("condition", $.expression),
+            "?", // implicit consequence = condition (truthy check, else replace with alternative)
+            ":",
+            field("alternative", $.expression),
+          )
         ),
       ),
 
