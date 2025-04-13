@@ -366,7 +366,7 @@
         "type": "SEQ",
         "members": [
           {
-            "type": "REPEAT",
+            "type": "REPEAT1",
             "content": {
               "type": "SEQ",
               "members": [
@@ -403,8 +403,11 @@
       "type": "SEQ",
       "members": [
         {
-          "type": "STRING",
-          "value": "@"
+          "type": "TOKEN",
+          "content": {
+            "type": "STRING",
+            "value": "@"
+          }
         },
         {
           "type": "SYMBOL",
@@ -424,21 +427,8 @@
                   "type": "CHOICE",
                   "members": [
                     {
-                      "type": "CHOICE",
-                      "members": [
-                        {
-                          "type": "SYMBOL",
-                          "name": "expression_list"
-                        },
-                        {
-                          "type": "STRING",
-                          "value": "$"
-                        },
-                        {
-                          "type": "STRING",
-                          "value": "$$"
-                        }
-                      ]
+                      "type": "SYMBOL",
+                      "name": "expression_list"
                     },
                     {
                       "type": "BLANK"
@@ -2072,14 +2062,6 @@
         },
         {
           "type": "SYMBOL",
-          "name": "tuple_literal"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "triple_literal"
-        },
-        {
-          "type": "SYMBOL",
           "name": "struct_literal"
         },
         {
@@ -2101,10 +2083,6 @@
         {
           "type": "SYMBOL",
           "name": "directive_expression"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "sigil_expression"
         }
       ]
     },
@@ -3441,86 +3419,6 @@
         }
       ]
     },
-    "tuple_literal": {
-      "type": "PREC",
-      "value": 11,
-      "content": {
-        "type": "SEQ",
-        "members": [
-          {
-            "type": "STRING",
-            "value": "$"
-          },
-          {
-            "type": "IMMEDIATE_TOKEN",
-            "content": {
-              "type": "STRING",
-              "value": "("
-            }
-          },
-          {
-            "type": "SYMBOL",
-            "name": "expression"
-          },
-          {
-            "type": "STRING",
-            "value": ","
-          },
-          {
-            "type": "SYMBOL",
-            "name": "expression"
-          },
-          {
-            "type": "STRING",
-            "value": ")"
-          }
-        ]
-      }
-    },
-    "triple_literal": {
-      "type": "PREC",
-      "value": 11,
-      "content": {
-        "type": "SEQ",
-        "members": [
-          {
-            "type": "STRING",
-            "value": "$$"
-          },
-          {
-            "type": "IMMEDIATE_TOKEN",
-            "content": {
-              "type": "STRING",
-              "value": "("
-            }
-          },
-          {
-            "type": "SYMBOL",
-            "name": "expression"
-          },
-          {
-            "type": "STRING",
-            "value": ","
-          },
-          {
-            "type": "SYMBOL",
-            "name": "expression"
-          },
-          {
-            "type": "STRING",
-            "value": ","
-          },
-          {
-            "type": "SYMBOL",
-            "name": "expression"
-          },
-          {
-            "type": "STRING",
-            "value": ")"
-          }
-        ]
-      }
-    },
     "struct_literal": {
       "type": "PREC",
       "value": -1,
@@ -3937,57 +3835,6 @@
         ]
       }
     },
-    "sigil_expression": {
-      "type": "PREC_LEFT",
-      "value": 13,
-      "content": {
-        "type": "SEQ",
-        "members": [
-          {
-            "type": "STRING",
-            "value": "$"
-          },
-          {
-            "type": "CHOICE",
-            "members": [
-              {
-                "type": "SYMBOL",
-                "name": "identifier"
-              },
-              {
-                "type": "SEQ",
-                "members": [
-                  {
-                    "type": "SYMBOL",
-                    "name": "identifier"
-                  },
-                  {
-                    "type": "STRING",
-                    "value": "("
-                  },
-                  {
-                    "type": "CHOICE",
-                    "members": [
-                      {
-                        "type": "SYMBOL",
-                        "name": "expression_list"
-                      },
-                      {
-                        "type": "BLANK"
-                      }
-                    ]
-                  },
-                  {
-                    "type": "STRING",
-                    "value": ")"
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      }
-    },
     "exact_literal": {
       "type": "SEQ",
       "members": [
@@ -4036,7 +3883,7 @@
     },
     "identifier": {
       "type": "PATTERN",
-      "value": "[a-zA-Z_][a-zA-Z0-9_]*"
+      "value": "[a-zA-Z_$][a-zA-Z0-9_$]*"
     },
     "valid_directives": {
       "type": "CHOICE",
@@ -4107,23 +3954,7 @@
     ],
     [
       "expression",
-      "qualified_identifier"
-    ],
-    [
-      "struct_literal",
-      "qualified_identifier",
-      "call_expression"
-    ],
-    [
-      "type",
-      "qualified_identifier",
-      "expression"
-    ],
-    [
-      "generic_type",
-      "qualified_identifier",
-      "call_expression",
-      "struct_literal"
+      "type"
     ]
   ],
   "precedences": [],

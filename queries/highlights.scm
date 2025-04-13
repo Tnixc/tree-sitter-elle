@@ -88,9 +88,6 @@
 ; Directives and sigils
 (directive_expression name: _ @embedded)
 
-(sigil_expression (identifier) @embedded)
-(sigil_expression "$" @punctuation)
-
 ; last item of qualified_identifier
 (qualified_identifier name: (identifier) @function)
 
@@ -185,5 +182,5 @@
 (import_statement (module_path "/" @punctuation.delimiter))
 
 ; tuples and triples
-(tuple_literal "$" @constructor)
-(triple_literal "$$" @constructor)
+; (tuple_literal "$" @constructor)
+; (triple_literal "$$" @constructor)

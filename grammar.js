@@ -26,16 +26,7 @@ module.exports = grammar({
     [$.range_expression],
     [$.pointer_type],
     [$.while_statement, $.parenthesized_expression],
-    // [$.expression, $.type], (aint no way)
-    [$.expression, $.qualified_identifier],
-    [$.struct_literal, $.qualified_identifier, $.call_expression],
-    [$.type, $.qualified_identifier, $.expression],
-    [
-      $.generic_type,
-      $.qualified_identifier,
-      $.call_expression,
-      $.struct_literal,
-    ],
+    [$.expression, $.type],
   ],
 
   rules: {
@@ -102,16 +93,16 @@ module.exports = grammar({
 
     qualified_identifier: ($) =>
       prec.left(
-        seq(repeat(seq($.identifier, "::")), field("name", $.identifier)),
+        seq(repeat1(seq($.identifier, "::")), field("name", $.identifier)),
       ),
 
     attributes: ($) => repeat1($.attribute),
 
     attribute: ($) =>
       seq(
-        "@",
+        token("@"),
         $.identifier,
-        optional(seq("(", optional(choice($.expression_list, "$", "$$")), ")")), // maybe this can be anything inside?
+        optional(seq("(", optional($.expression_list), ")")), // maybe this can be anything inside?
       ),
 
     // Fix: Restructure parameter_list to never match empty string
@@ -374,15 +365,15 @@ module.exports = grammar({
         $.boolean_literal,
         $.character_literal,
         $.array_literal,
-        $.tuple_literal,
-        $.triple_literal,
         $.struct_literal,
+        // $.tuple_literal,
+        // $.triple_literal,
         $.lambda_expression,
         $.range_expression,
         $.identifier,
         $.qualified_identifier,
         $.directive_expression,
-        $.sigil_expression,
+        // $.sigil_expression,
         // FIXME: determine if return is a valid expression here
       ),
 
@@ -440,8 +431,6 @@ module.exports = grammar({
         ),
       ),
 
-    // parenthesized_expression: ($) =>
-    //   prec(15, seq(token("("), $.expression, token(")"))),
     parenthesized_expression: ($) =>
       prec.dynamic(20, seq("(", field("inner", $.expression), ")")),
 
@@ -563,26 +552,29 @@ module.exports = grammar({
         "]",
       ),
 
-    tuple_literal: ($) =>
-      prec(
-        11,
-        seq("$", token.immediate("("), $.expression, ",", $.expression, ")"),
-      ),
+      
+    // FIXME: dollar signs
+    // tuple_literal: ($) =>
+    //   prec(21, seq(
+    //     token.immediate("$("),
+    //     token.immediate("("),
+    //     $.expression,
+    //     ",",
+    //     $.expression,
+    //     ")",
+    //   )),
 
-    triple_literal: ($) =>
-      prec(
-        11,
-        seq(
-          "$$",
-          token.immediate("("),
-          $.expression,
-          ",",
-          $.expression,
-          ",",
-          $.expression,
-          ")",
-        ),
-      ),
+    // triple_literal: ($) =>
+    //   prec(21, seq(
+    //     token.immediate("$$("),
+    //     token.immediate("("),
+    //     $.expression,
+    //     ",",
+    //     $.expression,
+    //     ",",
+    //     $.expression,
+    //     ")",
+    //   )),
 
     struct_literal: ($) =>
       prec(
@@ -644,17 +636,14 @@ module.exports = grammar({
         ),
       ),
 
-    sigil_expression: ($) =>
-      prec.left(
-        13,
-        seq(
-          "$",
-          choice(
-            $.identifier,
-            seq($.identifier, "(", optional($.expression_list), ")"),
-          ),
-        ),
-      ),
+    // sigil_expression: ($) =>
+    //   prec.left(
+    //     21,
+    //     seq(
+    //       token.immediate("$"),
+    //       $.identifier, token.immediate("("), optional($.expression_list), ")"
+    //     ),
+    //   ),
 
     // "arbitrary names which may be invalid in Elle but valid in the IR"
     exact_literal: ($) => seq("`", /[^`]+/, "`"),
@@ -663,7 +652,7 @@ module.exports = grammar({
       seq($.type, $.identifier, "[", $.expression, "]", ";"),
 
     // Identifiers
-    identifier: ($) => /[a-zA-Z_][a-zA-Z0-9_]*/,
+    identifier: ($) => /[a-zA-Z_$][a-zA-Z0-9_$]*/,
 
     // https://github.com/acquitelol/elle/blob/rewrite/README.md#-directives
     valid_directives: ($) =>

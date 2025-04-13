@@ -579,10 +579,6 @@
           "named": true
         },
         {
-          "type": "sigil_expression",
-          "named": true
-        },
-        {
           "type": "string_literal",
           "named": true
         },
@@ -592,14 +588,6 @@
         },
         {
           "type": "subscript_expression",
-          "named": true
-        },
-        {
-          "type": "triple_literal",
-          "named": true
-        },
-        {
-          "type": "tuple_literal",
           "named": true
         },
         {
@@ -1099,7 +1087,7 @@
     },
     "children": {
       "multiple": true,
-      "required": false,
+      "required": true,
       "types": [
         {
           "type": "identifier",
@@ -1133,25 +1121,6 @@
       "types": [
         {
           "type": "expression",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "sigil_expression",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "expression_list",
-          "named": true
-        },
-        {
-          "type": "identifier",
           "named": true
         }
       ]
@@ -1413,36 +1382,6 @@
     }
   },
   {
-    "type": "triple_literal",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "expression",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "tuple_literal",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "expression",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
     "type": "tuple_type",
     "named": true,
     "fields": {},
@@ -1641,14 +1580,6 @@
   },
   {
     "type": "#",
-    "named": false
-  },
-  {
-    "type": "$",
-    "named": false
-  },
-  {
-    "type": "$$",
     "named": false
   },
   {
